@@ -1,0 +1,19 @@
+<p-toast></p-toast>
+
+<div class="flex justify-content-center mt-6">
+  <p-card header="Iniciar Sesión">
+    
+    <div class="field mb-3">
+      <label>Email</label>
+      <input pInputText [(ngModel)]="email" class="w-full"/>
+    </div>
+
+    <div class="field mb-3">
+      <label>Password</label>
+      <p-password [(ngModel)]="password" [feedback]="false" class="w-full"></p-password>
+    </div>
+
+    <button pButton label="Entrar" class="w-full" (click)="login()"></button>
+
+  </p-card>
+</div>

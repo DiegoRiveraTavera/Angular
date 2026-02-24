@@ -1,0 +1,69 @@
+<div class="flex justify-content-center mt-6">
+  <p-card header="Registro">
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <div class="field mb-3">
+        <label>Usuario</label>
+        <input pInputText formControlName="usuario" class="w-full"/>
+      </div>
+
+      <div class="field mb-3">
+        <label>Email</label>
+        <input pInputText formControlName="email" class="w-full"/>
+      </div>
+
+      <div class="field mb-3">
+        <label>Nombre completo</label>
+        <input pInputText formControlName="nombreCompleto" class="w-full"/>
+      </div>
+
+      <div class="field mb-3">
+        <label>Dirección</label>
+        <input pInputText formControlName="direccion" class="w-full"/>
+      </div>
+
+      <div class="field mb-3">
+        <label>Teléfono</label>
+        <input pInputText formControlName="telefono" class="w-full"/>
+        <small *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
+          Debe contener exactamente 10 números.
+        </small>
+      </div>
+
+      <div class="field mb-3">
+        <label>Contraseña</label>
+        <p-password formControlName="password" [feedback]="false" class="w-full"></p-password>
+        <small *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          Mínimo 10 caracteres y debe contener #
+        </small>
+      </div>
+
+      <div class="field mb-3">
+        <label>Confirmar contraseña</label>
+        <p-password formControlName="confirmPassword" [feedback]="false" class="w-full"></p-password>
+        <small *ngIf="registerForm.errors?.['passwordsMismatch'] && registerForm.get('confirmPassword')?.touched">
+          Las contraseñas no coinciden.
+        </small>
+      </div>
+
+      <div class="field mb-3">
+        <p-checkbox formControlName="mayorEdad" binary="true"></p-checkbox>
+        <label class="ml-2">Declaro que soy mayor de edad</label>
+        <small *ngIf="registerForm.get('mayorEdad')?.invalid && registerForm.get('mayorEdad')?.touched">
+          Debes aceptar que eres mayor de edad.
+        </small>
+      </div>
+
+      <button 
+        pButton 
+        label="Registrarse" 
+        type="submit"
+        class="w-full"
+        [disabled]="registerForm.invalid">
+      </button>
+
+    </form>
+
+  </p-card>
+</div>
