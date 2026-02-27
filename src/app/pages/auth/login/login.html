@@ -1,19 +1,51 @@
-<p-toast></p-toast>
+<div class="flex align-items-center justify-content-center min-h-screen bg-gray-100">
+  
+  <p-card header="Iniciar Sesión" class="w-full md:w-30rem shadow-4 border-round-xl">
 
-<div class="flex justify-content-center mt-6">
-  <p-card header="Iniciar Sesión">
-    
-    <div class="field mb-3">
-      <label>Email</label>
-      <input pInputText [(ngModel)]="email" class="w-full"/>
-    </div>
+    <p-toast></p-toast>
 
-    <div class="field mb-3">
-      <label>Password</label>
-      <p-password [(ngModel)]="password" [feedback]="false" class="w-full"></p-password>
-    </div>
+    <form class="p-fluid">
 
-    <button pButton label="Entrar" class="w-full" (click)="login()"></button>
+      <div class="field mb-4">
+        <label for="email" class="font-semibold">Email</label>
+        <input 
+          pInputText 
+          id="email" 
+          [(ngModel)]="email" 
+          name="email"
+          class="w-full"
+        />
+      </div>
+
+      <div class="field mb-4">
+        <label for="password" class="font-semibold">Password</label>
+        <p-password 
+          id="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          [feedback]="false"
+          styleClass="w-full">
+        </p-password>
+      </div>
+
+      <button 
+        pButton 
+        type="button"
+        label="Entrar" 
+        class="w-full mb-3"
+        (click)="login()">
+      </button>
+
+      <button 
+        pButton 
+        type="button"
+        label="¿No tienes cuenta? Regístrate"
+        class="w-full p-button-text"
+        routerLink="/register">
+      </button>
+
+    </form>
 
   </p-card>
+
 </div>

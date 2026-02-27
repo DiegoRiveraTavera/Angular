@@ -1,7 +1,7 @@
-<div class="flex justify-content-center mt-6">
-  <p-card header="Registro">
+<div class="flex align-items-center justify-content-center min-h-screen surface-ground">
+  <p-card header="Registro" class="w-full sm:w-30rem shadow-4 border-round-xl">
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-fluid">
 
       <div class="field mb-3">
         <label>Usuario</label>
@@ -26,41 +26,58 @@
       <div class="field mb-3">
         <label>Teléfono</label>
         <input pInputText formControlName="telefono" class="w-full"/>
-        <small *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
+        <small class="p-error"
+          *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
           Debe contener exactamente 10 números.
         </small>
       </div>
 
       <div class="field mb-3">
         <label>Contraseña</label>
-        <p-password formControlName="password" [feedback]="false" class="w-full"></p-password>
-        <small *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+        <p-password formControlName="password"
+                    [feedback]="false"
+                    [toggleMask]="true"
+                    class="w-full">
+        </p-password>
+        <small class="p-error"
+          *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
           Mínimo 10 caracteres y debe contener #
         </small>
       </div>
 
       <div class="field mb-3">
         <label>Confirmar contraseña</label>
-        <p-password formControlName="confirmPassword" [feedback]="false" class="w-full"></p-password>
-        <small *ngIf="registerForm.errors?.['passwordsMismatch'] && registerForm.get('confirmPassword')?.touched">
+        <p-password formControlName="confirmPassword"
+                    [feedback]="false"
+                    [toggleMask]="true"
+                    class="w-full">
+        </p-password>
+        <small class="p-error"
+          *ngIf="registerForm.errors?.['passwordsMismatch'] &&
+                 registerForm.get('confirmPassword')?.touched">
           Las contraseñas no coinciden.
         </small>
       </div>
 
-      <div class="field mb-3">
+      <div class="field-checkbox mb-4">
         <p-checkbox formControlName="mayorEdad" binary="true"></p-checkbox>
         <label class="ml-2">Declaro que soy mayor de edad</label>
-        <small *ngIf="registerForm.get('mayorEdad')?.invalid && registerForm.get('mayorEdad')?.touched">
-          Debes aceptar que eres mayor de edad.
-        </small>
       </div>
 
       <button 
         pButton 
         label="Registrarse" 
         type="submit"
-        class="w-full"
+        class="w-full mb-3"
         [disabled]="registerForm.invalid">
+      </button>
+
+      <button 
+        pButton 
+        label="¿Ya tienes cuenta? Inicia sesión"
+        type="button"
+        class="w-full p-button-text"
+        routerLink="/login">
       </button>
 
     </form>

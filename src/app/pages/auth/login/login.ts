@@ -36,13 +36,8 @@ export class LoginComponent {
 
   login() {
     if (this.email === 'admin@test.com' && this.password === '1234') {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Login correcto',
-        detail: 'Bienvenido'
-      });
+      this.router.navigate(['/home']);
 
-      this.router.navigate(['/dashboard']);
     } else {
       this.messageService.add({
         severity: 'error',
