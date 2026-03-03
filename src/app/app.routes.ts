@@ -37,6 +37,21 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/auth/register/register')
         .then(m => m.RegisterComponent)
-  }
+  },
 
+  //User
+  {
+    path: 'user',
+    loadComponent: () =>
+      import('./pages/user/user')
+        .then(m => m.User)
+  },
+
+  //Group
+  {
+    path: 'groups',
+    loadComponent: () =>
+      import('./pages/groups/groups')
+        .then(m => m.Groups)
+  }
 ];

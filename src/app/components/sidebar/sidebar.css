@@ -36,3 +36,17 @@
   background: #2563eb;
   color: white;
 }
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* ocupa toda la pantalla */
+}
+
+.version {
+  margin-top: auto; /* empuja hacia abajo */
+  padding: 1rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  text-align: center;
+}

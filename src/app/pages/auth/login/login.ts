@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 // PrimeNG
 import { ButtonModule } from 'primeng/button';
@@ -20,7 +20,8 @@ import { MessageService } from 'primeng/api';
     InputTextModule,
     PasswordModule,
     CardModule,
-    ToastModule
+    ToastModule,
+    RouterModule
   ],
   providers: [MessageService]
 })
