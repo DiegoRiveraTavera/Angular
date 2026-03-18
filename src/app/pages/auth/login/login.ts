@@ -10,6 +10,9 @@ import { CardModule } from 'primeng/card';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
+// Servicios
+import { PermissionsService } from '../../../services/permissions.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -32,13 +35,14 @@ export class LoginComponent {
 
   constructor(
     private messageService: MessageService,
-    private router: Router
+    private router: Router,
+    private permsSvc: PermissionsService
   ) {}
 
   login() {
     if (this.email === 'admin@test.com' && this.password === '1234') {
+      // 🚀 Solo existe admin
       this.router.navigate(['/home']);
-
     } else {
       this.messageService.add({
         severity: 'error',

@@ -4,7 +4,7 @@
 
     <p-toast></p-toast>
 
-    <form class="p-fluid">
+    <form class="p-fluid" (ngSubmit)="login()" #form="ngForm">
 
       <div class="field mb-4">
         <label for="email" class="font-semibold">Email</label>
@@ -30,10 +30,10 @@
 
       <button 
         pButton 
-        type="button"
+        type="submit"
         label="Entrar" 
-        class="w-full mb-3"
-        (click)="login()">
+        class="w-full mb-3" >
+
       </button>
 
       <button 

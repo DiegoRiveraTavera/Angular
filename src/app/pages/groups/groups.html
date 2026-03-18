@@ -1,21 +1,156 @@
-<app-sidebar></app-sidebar>
+<div>
 
-<div class="flex flex-column align-items-center justify-content-center mt-6 gap-4">
+  <app-sidebar></app-sidebar>
 
-  <h2>Total</h2>
+  <!-- CONTENIDO -->
+  <div class="content">
 
-  <p-card class="w-15rem text-center">
-    <div class="text-3xl font-bold">
-      N
+    <!-- CARDS -->
+    <div class="flex justify-content-center gap-6 mb-6">
+      <div class="flex flex-column align-items-center">
+        <h2>Total</h2>
+        <p-card class="w-15rem text-center">
+          <div class="text-3xl font-bold">
+            {{ grupos.length }}
+          </div>
+        </p-card>
+      </div>
+
+      <div class="flex flex-column align-items-center">
+        <h2>Advance</h2>
+        <p-card class="w-15rem text-center">
+          <div class="text-xl font-bold">
+            Card
+          </div>
+        </p-card>
+      </div>
     </div>
-  </p-card>
 
-  <h2>Advance</h2>
-
-  <p-card class="w-15rem text-center">
-    <div class="text-xl font-bold">
-      Card
+    <!-- BOTÓN AGREGAR -->
+    <div class="flex justify-content-end mb-3">
+      <button *ifHasPermission="['grupos:agregar']"
+        pButton 
+        label="Agregar" 
+        icon="pi pi-plus"
+        class="p-button-success"
+        (click)="abrirModal()">
+      </button>
     </div>
-  </p-card>
+
+    <!-- TABLA -->
+    <p-table 
+      [value]="grupos" 
+      responsiveLayout="scroll"
+      class="p-datatable-striped">
+
+      <!-- HEADER -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nivel</th>
+          <th>Autor</th>
+          <th>Nombre</th>
+          <th>Integrantes</th>
+          <th>Tickets</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <!-- BODY -->
+      <ng-template pTemplate="body" let-grupo let-i="rowIndex">
+        <tr>
+          <td>{{ grupo.nivel }}</td>
+          <td>{{ grupo.autor }}</td>
+          <td>{{ grupo.nombre }}</td>
+          <td>{{ grupo.integrantes }}</td>
+          <td>{{ grupo.tickets }}</td>
+          <td>{{ grupo.descripcion }}</td>
+
+          <td>
+            <button 
+    pButton 
+    icon="pi pi-chart-bar"
+    class="p-button-info p-button-sm mr-2"
+    (click)="verDashboard(grupo)">
+  </button>
+
+   <button *ifHasPermission="['grupos:editar']"
+    pButton 
+    icon="pi pi-pencil"
+    class="p-button-warning p-button-sm mr-2"
+    (click)="editarGrupo(grupo, i)">
+  </button>
+
+  <button *ifHasPermission="['grupos:eliminar']"
+    pButton 
+    icon="pi pi-trash"
+    class="p-button-danger p-button-sm"
+    (click)="eliminarGrupo(i)">
+  </button>
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+
+  </div>
 
 </div>
+
+<!-- MODAL -->
+<p-dialog 
+  header="Agregar Grupo"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{width: '400px'}">
+
+  <div class="p-fluid">
+
+    <div class="field mb-3">
+      <label>Nivel</label>
+      <input pInputText [(ngModel)]="nuevoGrupo.nivel">
+    </div>
+
+    <div class="field mb-3">
+      <label>Autor</label>
+      <input pInputText [(ngModel)]="nuevoGrupo.autor">
+    </div>
+
+    <div class="field mb-3">
+      <label>Nombre</label>
+      <input pInputText [(ngModel)]="nuevoGrupo.nombre">
+    </div>
+
+    <div class="field mb-3">
+      <label>Integrantes</label>
+      <input type="number" pInputText [(ngModel)]="nuevoGrupo.integrantes">
+    </div>
+
+    <div class="field mb-3">
+      <label>Tickets</label>
+      <input type="number" pInputText [(ngModel)]="nuevoGrupo.tickets">
+    </div>
+
+    <div class="field mb-3">
+      <label>Descripción</label>
+      <input pInputText [(ngModel)]="nuevoGrupo.descripcion">
+    </div>
+
+    <div class="flex justify-content-end gap-2 mt-4">
+      <button 
+        pButton 
+        label="Cancelar" 
+        class="p-button-secondary"
+        (click)="cerrarModal()">
+      </button>
+
+      <button 
+  pButton 
+  [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
+  (click)="agregarGrupo()">
+</button>
+    </div>
+
+  </div>
+
+</p-dialog>

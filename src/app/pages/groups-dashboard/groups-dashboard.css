@@ -1,0 +1,37 @@
+.content{
+  margin-left:250px;
+  padding:20px;
+}
+
+.resumen{
+  display:grid;
+  grid-template-columns: repeat(5,1fr);
+  gap:15px;
+}
+
+.kanban{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap:20px;
+}
+
+.column{
+  background:#f5f5f5;
+  padding:10px;
+  border-radius:8px;
+  min-height:300px;
+}
+
+.column p-card{
+  display:block;
+  margin-bottom:10px;
+  cursor:grab;
+}
+
+.cdk-drag-preview{
+  box-shadow:0 5px 10px rgba(0,0,0,0.3);
+}
+
+.cdk-drag-placeholder{
+  opacity:0.3;
+}

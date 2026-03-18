@@ -1,0 +1,342 @@
+<app-sidebar></app-sidebar>
+
+<div class="content">
+
+  <div class="flex justify-content-between mb-4">
+    <h2>Dashboard del Grupo: {{ grupoNombre }}</h2>
+
+    <button
+      pButton
+      label="Crear Ticket"
+      icon="pi pi-plus"
+      class="p-button-success"
+      (click)="abrirModalTicket()">
+    </button>
+  </div>
+
+  <h3>Integrantes del grupo</h3>
+
+  <div class="flex gap-2 mb-3">
+    <button
+      pButton
+      icon="pi pi-user-plus"
+      label="Agregar integrante"
+      class="p-button-success"
+      (click)="abrirModalIntegrante()">
+    </button>
+  </div>
+
+  <ul class="mb-4">
+    <li
+      *ngFor="let integrante of integrantes; let i = index"
+      class="flex align-items-center gap-2 mb-2">
+
+      {{ integrante }}
+
+      <button
+        pButton
+        icon="pi pi-trash"
+        class="p-button-danger p-button-sm"
+        (click)="eliminarIntegrante(i)">
+      </button>
+
+    </li>
+  </ul>
+
+  <!-- RESUMEN -->
+
+  <div class="grid resumen">
+
+    <p-card header="Total">
+      {{ totalTickets }}
+    </p-card>
+
+    <p-card header="Pendientes">
+      {{ pendientes }}
+    </p-card>
+
+    <p-card header="En progreso">
+      {{ progreso }}
+    </p-card>
+
+    <p-card header="Hechos">
+      {{ hechos }}
+    </p-card>
+
+    <p-card header="Bloqueados">
+      {{ bloqueados }}
+    </p-card>
+
+  </div>
+
+  <!-- KANBAN -->
+
+  <h3 class="mt-5">Kanban</h3>
+
+<div class="kanban">
+
+  <!-- PENDIENTE -->
+
+  <div
+    class="column"
+    cdkDropList
+    (cdkDropListDropped)="drop($event,'pendiente')">
+
+    <h4>Pendiente ({{ pendientes }})</h4>
+
+    <p-card
+      *ngFor="let t of pendientesList"
+      cdkDrag
+      [cdkDragData]="t">
+
+      <b>{{ t.titulo }}</b>
+      <div class="text-sm">Asignado: {{ t.asignado }}</div>
+
+    </p-card>
+
+  </div>
+
+  <!-- EN PROGRESO -->
+
+  <div
+    class="column"
+    cdkDropList
+    (cdkDropListDropped)="drop($event,'progreso')">
+
+    <h4>En progreso ({{ progreso }})</h4>
+
+    <p-card
+      *ngFor="let t of progresoList"
+      cdkDrag
+      [cdkDragData]="t">
+
+      <b>{{ t.titulo }}</b>
+
+    </p-card>
+
+  </div>
+
+  <!-- HECHO -->
+
+  <div
+    class="column"
+    cdkDropList
+    (cdkDropListDropped)="drop($event,'hecho')">
+
+    <h4>Hecho ({{ hechos }})</h4>
+
+    <p-card
+      *ngFor="let t of hechosList"
+      cdkDrag
+      [cdkDragData]="t">
+
+      <b>{{ t.titulo }}</b>
+
+    </p-card>
+
+  </div>
+
+  <!-- BLOQUEADO -->
+
+  <div
+    class="column"
+    cdkDropList
+    (cdkDropListDropped)="drop($event,'bloqueado')">
+
+    <h4>Bloqueado ({{ bloqueados }})</h4>
+
+    <p-card
+      *ngFor="let t of bloqueadosList"
+      cdkDrag
+      [cdkDragData]="t">
+
+      <b>{{ t.titulo }}</b>
+
+    </p-card>
+
+  </div>
+
+</div>
+
+  <!-- FILTROS -->
+
+  <h3 class="mt-5">Filtros</h3>
+
+  <div class="flex gap-2 mb-4">
+
+    <button
+      pButton
+      label="Todos"
+      (click)="setFiltro('todos')">
+    </button>
+
+    <button
+      pButton
+      label="Mis Tickets"
+      (click)="setFiltro('mis')">
+    </button>
+
+    <button
+      pButton
+      label="Pendientes"
+      (click)="setFiltro('pendientes')">
+    </button>
+
+    <button
+      pButton
+      label="Alta Prioridad"
+      class="p-button-danger"
+      (click)="setFiltro('alta')">
+    </button>
+
+  </div>
+
+  <!-- TABLA -->
+
+  <h3>Tickets</h3>
+
+  <p-table [value]="ticketsFiltrados">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Título</th>
+        <th>Asignado</th>
+        <th>Prioridad</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-ticket>
+      <tr>
+        <td>{{ ticket.titulo }}</td>
+        <td>{{ ticket.asignado }}</td>
+        <td>{{ ticket.prioridad }}</td>
+        <td>{{ ticket.estado }}</td>
+        <td>{{ ticket.fecha }}</td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+
+  <!-- MODAL CREAR TICKET -->
+
+<p-dialog
+  header="Crear Nuevo Ticket"
+  [(visible)]="modalTicket"
+  [modal]="true"
+  [style]="{width:'450px'}">
+
+  <div class="p-fluid">
+
+    <div class="field mb-3">
+      <label>Título</label>
+      <input pInputText [(ngModel)]="nuevoTicket.titulo">
+    </div>
+
+    <div class="field mb-3">
+      <label>Descripción</label>
+
+      <textarea
+        rows="3"
+        class="p-inputtext w-full"
+        [(ngModel)]="nuevoTicket.descripcion">
+      </textarea>
+
+    </div>
+
+    <div class="grid">
+
+      <div class="col-6 field">
+        <label>Estado</label>
+
+        <select [(ngModel)]="nuevoTicket.estado">
+          <option value="pendiente">Pendiente</option>
+          <option value="progreso">En progreso</option>
+          <option value="hecho">Hecho</option>
+          <option value="bloqueado">Bloqueado</option>
+        </select>
+
+      </div>
+
+      <div class="col-6 field">
+        <label>Prioridad</label>
+
+        <select [(ngModel)]="nuevoTicket.prioridad">
+          <option>Alta</option>
+          <option>Media</option>
+          <option>Baja</option>
+        </select>
+
+      </div>
+
+    </div>
+
+    <div class="field mb-3">
+      <label>Asignado a</label>
+
+      <input
+        pInputText
+        [(ngModel)]="nuevoTicket.asignado">
+    </div>
+
+    <div class="flex justify-content-end gap-2">
+
+      <button
+        pButton
+        label="Cancelar"
+        class="p-button-secondary"
+        (click)="cerrarModalTicket()">
+      </button>
+
+      <button
+        pButton
+        label="Crear"
+        class="p-button-success"
+        (click)="crearTicket()">
+      </button>
+
+    </div>
+
+  </div>
+
+</p-dialog>
+
+<!-- MODAL AGREGAR INTEGRANTE -->
+<p-dialog
+  header="Agregar integrante"
+  [(visible)]="modalIntegrante"
+  [modal]="true"
+  [style]="{width:'350px'}">
+
+  <div class="p-fluid">
+
+    <div class="field mb-3">
+      <label>Nombre del integrante</label>
+      <input pInputText [(ngModel)]="nuevoIntegrante">
+    </div>
+
+    <div class="flex justify-content-end gap-2">
+
+      <button
+        pButton
+        label="Cancelar"
+        class="p-button-secondary"
+        (click)="modalIntegrante=false">
+      </button>
+
+      <button
+        pButton
+        label="Agregar"
+        class="p-button-success"
+        (click)="agregarIntegrante()">
+      </button>
+
+    </div>
+
+  </div>
+
+</p-dialog>
+
+
+</div>
