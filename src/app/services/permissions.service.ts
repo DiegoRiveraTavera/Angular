@@ -1,9 +1,18 @@
 //src/app/services/permissions.service.ts
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
+import { UsersService } from './users.service';
 
 @Injectable({ providedIn: 'root' })
 export class PermissionsService {
   private userPermissions = signal<string[]>([]);
+
+  // Computed que obtiene permisos del usuario actual
+  currentPermissions = computed(() => {
+    const currentUser = this.usersService.currentUser();
+    return currentUser?.permissions || this.userPermissions();
+  });
+
+  constructor(private usersService: UsersService) {}
 
   // Setter: asigna permisos al usuario
   setPermissions(perms: string[]) {
@@ -12,16 +21,22 @@ export class PermissionsService {
 
   // Getter: devuelve la lista actual de permisos
   get permissions(): string[] {
-    return this.userPermissions();
+    return this.currentPermissions();
   }
 
   // Métodos de verificación
   hasPermission(permiso: string): boolean {
-    return this.userPermissions().includes(permiso);
+    const perms = this.currentPermissions();
+    return perms.includes(permiso) ||
+           perms.includes(permiso.split(':')[0] + ':*');
   }
 
   hasAnyPermission(perms: string[]): boolean {
     return perms.some(p => this.hasPermission(p));
+  }
+
+  hasAllPermissions(perms: string[]): boolean {
+    return perms.every(p => this.hasPermission(p));
   }
 }
   

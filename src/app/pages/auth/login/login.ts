@@ -12,6 +12,7 @@ import { MessageService } from 'primeng/api';
 
 // Servicios
 import { PermissionsService } from '../../../services/permissions.service';
+import { UsersService } from '../../../services/users.service';
 
 @Component({
   selector: 'app-login',
@@ -36,12 +37,22 @@ export class LoginComponent {
   constructor(
     private messageService: MessageService,
     private router: Router,
-    private permsSvc: PermissionsService
+    private permsSvc: PermissionsService,
+    private usersSvc: UsersService
   ) {}
 
   login() {
     if (this.email === 'admin@test.com' && this.password === '1234') {
-      // 🚀 Solo existe admin
+      // 🚀 Setear permisos de admin
+      const adminPermissions = [
+        'admin',
+        'user:ver', 'user:editar', 'user:crear', 'user:eliminar',
+        'grupos:ver', 'grupos:agre', 'grupos:eliminar', 'grupos:editar',
+        'tickets:ver', 'tickets:agre', 'tickets:eliminar', 'tickets:editar', 'tickets:cambiar_estado',
+        'reportes:ver', 'reportes:descargar', 'reportes:crear'
+      ];
+      this.permsSvc.setPermissions(adminPermissions);
+      this.usersSvc.setCurrentUser('1');
       this.router.navigate(['/home']);
     } else {
       this.messageService.add({

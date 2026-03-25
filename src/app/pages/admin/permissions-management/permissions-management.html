@@ -1,0 +1,178 @@
+<div class="permissions-container">
+      <app-sidebar></app-sidebar>
+  <p-toast position="top-right"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <!-- Header -->
+  <div class="header-section">
+    <div class="title-section">
+      <h1>Gestión de Permisos</h1>
+      <p-badge [value]="getActiveUserCount()" severity="success"></p-badge>
+    </div>
+    <button pButton type="button" label="+ Nuevo Usuario" 
+            icon="pi pi-plus" 
+            (click)="openNewUserDialog()"
+            class="p-button-rounded"></button>
+  </div>
+
+  <!-- Tabla de Usuarios -->
+  <p-card class="users-table-card">
+    <ng-template pTemplate="header">
+      <h2>Usuarios del Sistema</h2>
+    </ng-template>
+
+    <p-table [value]="users" styleClass="p-datatable-striped" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Permisos</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>
+            <span class="font-semibold">{{ user.name }}</span>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <p-badge [value]="getPermissionCount(user)" 
+                     severity="success">
+            </p-badge>
+            <span class="permission-label">permisos</span>
+          </td>
+          <td>
+            <p-badge [value]="user.active ? 'Activo' : 'Inactivo'" 
+                     [severity]="user.active ? 'success' : 'warn'">
+            </p-badge>
+          </td>
+          <td>
+            <div class="button-group">
+              <button pButton type="button" icon="pi pi-lock"
+                      (click)="openPermissionsDialog(user)"
+                      class="p-button-rounded p-button-text p-button-info"
+                      pTooltip="Editar Permisos"
+                      tooltipPosition="top"></button>
+              
+              <button pButton type="button" 
+                      [icon]="user.active ? 'pi pi-pause' : 'pi pi-play'"
+                      (click)="toggleUserActive(user)"
+                      class="p-button-rounded p-button-text"
+                      [ngClass]="user.active ? 'p-button-warning' : 'p-button-success'"
+                      [pTooltip]="user.active ? 'Desactivar' : 'Activar'"
+                      tooltipPosition="top"></button>
+              
+              <button pButton type="button" icon="pi pi-trash"
+                      (click)="deleteUser(user)"
+                      class="p-button-rounded p-button-text p-button-danger"
+                      pTooltip="Eliminar"
+                      tooltipPosition="top"></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center p-4">
+            No hay usuarios registrados
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Dialog Nuevo Usuario -->
+  <p-dialog [(visible)]="visibleUserDialog" 
+            header="Crear Nuevo Usuario" 
+            [modal]="true" 
+            [style]="{ width: '400px' }">
+    <div class="form-group">
+      <label>Nombre *</label>
+      <input pInputText 
+             [(ngModel)]="newUserForm.name"
+             placeholder="Nombre del usuario"
+             stylesClass="w-full"/>
+    </div>
+
+    <div class="form-group">
+      <label>Email *</label>
+      <input pInputText 
+             [(ngModel)]="newUserForm.email"
+             placeholder="email@example.com"
+             stylesClass="w-full"/>
+    </div>
+
+    <div class="form-group">
+      <p-checkbox [(ngModel)]="newUserForm.active" 
+                  [binary]="true">
+      </p-checkbox>
+      <span>Usuario Activo</span>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cancelar" 
+              (click)="visibleUserDialog = false"
+              class="p-button-text"></button>
+      <button pButton type="button" label="Crear" 
+              icon="pi pi-check"
+              (click)="createUser()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Dialog Gestión de Permisos -->
+  <p-dialog [(visible)]="visiblePermissionsDialog" 
+            [header]="'Permisos de ' + (selectedUser?.name || '')" 
+            [modal]="true" 
+            [style]="{ width: '600px' }">
+    
+    <div class="permissions-dialog-content" *ngIf="selectedUser">
+      <!-- Botones de Selección Rápida -->
+      <div class="quick-actions">
+        <button pButton type="button" label="Seleccionar Todo" 
+                icon="pi pi-check"
+                (click)="selectAllPermissions()"
+                class="p-button-sm p-button-info"></button>
+        <button pButton type="button" label="Limpiar Todo" 
+                icon="pi pi-times"
+                (click)="clearAllPermissions()"
+                class="p-button-sm p-button-outlined"></button>
+      </div>
+
+      <!-- Permisos por Grupos -->
+      <div class="permissions-list">
+        <h3>Selecciona Permisos</h3>
+        <div *ngFor="let group of permissionGroups | keyvalue" class="permission-group">
+          <h4 class="group-title">{{ group.key }}</h4>
+          <div class="permission-items">
+            <div *ngFor="let permission of group.value" class="permission-item">
+              <p-checkbox 
+                [(ngModel)]="selectedPermissions"
+                [value]="permission"
+                [binary]="false">
+              </p-checkbox>
+              <span>{{ permission }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen de Permisos -->
+      <div class="permissions-summary">
+        <p-badge [value]="selectedPermissions.length" severity="info"></p-badge>
+        <span class="ms-2">Permisos seleccionados</span>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Cancelar" 
+              (click)="visiblePermissionsDialog = false"
+              class="p-button-text"></button>
+      <button pButton type="button" label="Guardar Cambios" 
+              icon="pi pi-check"
+              (click)="savePermissions()"
+              class="p-button-success"></button>
+    </ng-template>
+  </p-dialog>
+</div>

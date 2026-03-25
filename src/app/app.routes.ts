@@ -66,5 +66,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/tickets/tickets')
         .then(m => m.Tickets)
+  },
+
+  // Admin - Gestión de Permisos
+  {
+    path: 'admin/permissions',
+    loadComponent: () =>
+      import('./pages/admin/permissions-management/permissions-management')
+        .then(m => m.PermissionsManagementComponent)
   }
 ];
