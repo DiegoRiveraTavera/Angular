@@ -2,9 +2,14 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  permissions: string[];
+  permissions: string[];       // ⚠️ esto no viene de la BD directamente (viene de user_permissions)
   active: boolean;
-  createdAt?: Date;
+  created_at?: string;         // snake_case igual que la BD
+  // Campos opcionales que vienen de Supabase
+  calle?: string;
+  colonia?: string;
+  no_exterior?: string;
+  telefono?: string;
 }
 
 export const AVAILABLE_PERMISSIONS = {

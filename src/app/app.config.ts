@@ -19,9 +19,11 @@ import { FormsModule } from '@angular/forms';
 
 // 🔹 Servicios
 import { MessageService } from 'primeng/api';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideHttpClient(),
 
     providePrimeNG({
       theme: {

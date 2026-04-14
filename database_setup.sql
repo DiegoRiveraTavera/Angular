@@ -5,10 +5,10 @@
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    calle VARCHAR(255) NOT NULL,
-    colonia VARCHAR(255) NOT NULL,
-    no_exterior VARCHAR(50) NOT NULL,
+    email VARCHAR(255) UNIQUE ,
+    calle VARCHAR(255) ,
+    colonia VARCHAR(255) ,
+    no_exterior VARCHAR(50),
     telefono VARCHAR(50),
     active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS users (
 -- Crear tabla de permisos
 CREATE TABLE IF NOT EXISTS permissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    permission_key VARCHAR(100) UNIQUE NOT NULL, -- Ej: 'user:ver'
-    module VARCHAR(100) NOT NULL, -- Ej: 'Usuarios', 'Grupos'
+    permission_key VARCHAR(100) UNIQUE , -- Ej: 'user:ver'
+    module VARCHAR(100) , -- Ej: 'Usuarios', 'Grupos'
     description VARCHAR(255)
 );
 
@@ -32,9 +32,9 @@ CREATE TABLE IF NOT EXISTS user_permissions (
 -- Crear tabla de grupos
 CREATE TABLE IF NOT EXISTS groups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    level VARCHAR(100) NOT NULL, -- Básico, Intermedio, Avanzado, etc.
-    author VARCHAR(255) NOT NULL, -- Nombre del creador
+    name VARCHAR(255) ,
+    level VARCHAR(100) , -- Básico, Intermedio, Avanzado, etc.
+    author VARCHAR(255) , -- Nombre del creador
     members_count INTEGER DEFAULT 0,
     tickets_count INTEGER DEFAULT 0,
     description TEXT
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS user_groups (
 -- Crear tabla de tickets
 CREATE TABLE IF NOT EXISTS tickets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR(255),
     description TEXT,
     status VARCHAR(50) DEFAULT 'abierto',
     created_by UUID REFERENCES users(id) ON DELETE SET NULL,

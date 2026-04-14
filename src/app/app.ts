@@ -2,13 +2,12 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { HasPermissionDirective } from './directives/has-permission.directive';
 import { PermissionsService } from './services/permissions.service';
 import { UsersService } from './services/users.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ButtonModule, HasPermissionDirective],
+  imports: [RouterOutlet, ButtonModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

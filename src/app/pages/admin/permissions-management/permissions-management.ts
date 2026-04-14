@@ -71,8 +71,15 @@ export class PermissionsManagementComponent implements OnInit {
   }
 
   loadUsers() {
-    this.users = this.usersService.users();
-  }
+  this.usersService.getAll().subscribe({
+    next: (users) => this.users = users,
+    error: () => this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudieron cargar los usuarios'
+    })
+  });
+}
 
   // ============= USUARIOS =============
   openNewUserDialog() {
