@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { TableModule } from 'primeng/table';
@@ -7,125 +7,128 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Router } from '@angular/router';
-import { HasPermissionDirective } from "../../directives/has-permission.directive";
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { HasPermissionDirective } from '../../directives/has-permission.directive';
+import { GroupsService, Group } from '../../services/group.service';
 
 @Component({
   selector: 'app-groups',
   standalone: true,
   imports: [
-    CommonModule,
-    Sidebar,
-    CardModule,
-    TableModule,
-    DialogModule,
-    InputTextModule,
-    ButtonModule,
-    FormsModule,
-    HasPermissionDirective
-],
+    CommonModule, Sidebar, CardModule, TableModule,
+    DialogModule, InputTextModule, ButtonModule, FormsModule,
+    ToastModule, ConfirmDialogModule, HasPermissionDirective
+  ],
   templateUrl: './groups.html',
-  styleUrls: ['./groups.css']
+  styleUrls: ['./groups.css'],
+  providers: [MessageService, ConfirmationService]
 })
-export class Groups {
+export class Groups implements OnInit {
 
-  modoEdicion: boolean = false;
-indexEditando: number | null = null;
-  grupos = [
-    {
-      nivel: 'Básico',
-      autor: 'Juan Pérez',
-      nombre: 'Grupo Angular',
-      integrantes: 10,
-      tickets: 3,
-      descripcion: 'Grupo de introducción a Angular'
-    },
-    {
-      nivel: 'Intermedio',
-      autor: 'Laura Gómez',
-      nombre: 'Grupo PrimeNG',
-      integrantes: 8,
-      tickets: 12,
-      descripcion: 'Componentes avanzados con PrimeNG'
-    },
-    {
-      nivel: 'Avanzado',
-      autor: 'Carlos Ruiz',
-      nombre: 'Grupo FullStack',
-      integrantes: 5,
-      tickets: 5,
-      descripcion: 'Proyecto completo frontend + backend'
-    }
-  ];
+  grupos: Group[] = [];
+  visible = false;
+  modoEdicion = false;
+  grupoEditandoId: string | null = null;
 
-visible: boolean = false;
-
-nuevoGrupo = {
-  nivel: '',
-  autor: '',
-  nombre: '',
-  integrantes: 0,
-  tickets: 0,
-  descripcion: ''
-};
-
-abrirModal() {
-  this.visible = true;
-}
-
-cerrarModal() {
-  this.visible = false;
-}
-
-resetFormulario() {
-
-  this.nuevoGrupo = {
-    nivel: '',
-    autor: '',
-    nombre: '',
-    integrantes: 0,
-    tickets: 0,
-    descripcion: ''
+  nuevoGrupo = {
+    name: '',
+    level: '',
+    author: '',
+    description: ''
   };
 
-  this.modoEdicion = false;
-  this.indexEditando = null;
-  this.visible = false;
-}
+  constructor(
+    private router: Router,
+    private groupsSvc: GroupsService,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
+  ) {}
 
-agregarGrupo() {
-
-  if (this.modoEdicion && this.indexEditando !== null) {
-
-    this.grupos[this.indexEditando] = { ...this.nuevoGrupo };
-
-  } else {
-
-    this.grupos.push({ ...this.nuevoGrupo });
-
+  ngOnInit() {
+    this.cargarGrupos();
   }
 
-  this.resetFormulario();
-}
+  cargarGrupos() {
+    this.groupsSvc.getAll().subscribe({
+      next: (data) => this.grupos = data,
+      error: () => this.messageService.add({
+        severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los grupos'
+      })
+    });
+  }
 
-eliminarGrupo(index: number) {
-  this.grupos.splice(index, 1);
-}
+  abrirModal() {
+    this.resetFormulario();
+    this.visible = true;
+  }
 
-editarGrupo(grupo: any, index: number) {
+  cerrarModal() {
+    this.visible = false;
+  }
 
-  this.modoEdicion = true;
-  this.indexEditando = index;
+  resetFormulario() {
+    this.nuevoGrupo = { name: '', level: '', author: '', description: '' };
+    this.modoEdicion = false;
+    this.grupoEditandoId = null;
+  }
 
-  this.nuevoGrupo = { ...grupo };
+  agregarGrupo() {
+    if (!this.nuevoGrupo.name) return;
 
-  this.visible = true;
-}
+    if (this.modoEdicion && this.grupoEditandoId) {
+      this.groupsSvc.update(this.grupoEditandoId, this.nuevoGrupo).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Actualizado', detail: 'Grupo actualizado' });
+          this.visible = false;
+          this.cargarGrupos();
+        },
+        error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar' })
+      });
+    } else {
+      this.groupsSvc.create(this.nuevoGrupo).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Creado', detail: 'Grupo creado correctamente' });
+          this.visible = false;
+          this.cargarGrupos();
+        },
+        error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear' })
+      });
+    }
+  }
 
-verDashboard(grupo: any) {
+  editarGrupo(grupo: Group) {
+    this.modoEdicion = true;
+    this.grupoEditandoId = grupo.id;
+    this.nuevoGrupo = {
+      name: grupo.name,
+      level: grupo.level,
+      author: grupo.author,
+      description: grupo.description
+    };
+    this.visible = true;
+  }
 
-  this.router.navigate(['/groups-dashboard', grupo.nombre]);
+  eliminarGrupo(grupo: Group) {
+    this.confirmationService.confirm({
+      message: `¿Deseas eliminar el grupo "${grupo.name}"?`,
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.groupsSvc.delete(grupo.id).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: 'Grupo eliminado' });
+            this.cargarGrupos();
+          },
+          error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar' })
+        });
+      }
+    });
+  }
 
-}
-constructor(private router: Router) {}
+  verDashboard(grupo: Group) {
+    this.router.navigate(['/groups-dashboard', grupo.id]);
+  }
 }

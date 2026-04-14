@@ -1,49 +1,27 @@
 <div>
-
   <app-sidebar></app-sidebar>
+  <p-toast></p-toast>
+  <p-confirmDialog></p-confirmDialog>
 
-  <!-- CONTENIDO -->
   <div class="content">
 
-    <!-- CARDS -->
     <div class="flex justify-content-center gap-6 mb-6">
       <div class="flex flex-column align-items-center">
         <h2>Total</h2>
         <p-card class="w-15rem text-center">
-          <div class="text-3xl font-bold">
-            {{ grupos.length }}
-          </div>
-        </p-card>
-      </div>
-
-      <div class="flex flex-column align-items-center">
-        <h2>Advance</h2>
-        <p-card class="w-15rem text-center">
-          <div class="text-xl font-bold">
-            Card
-          </div>
+          <div class="text-3xl font-bold">{{ grupos.length }}</div>
         </p-card>
       </div>
     </div>
 
-    <!-- BOTÓN AGREGAR -->
     <div class="flex justify-content-end mb-3">
       <button *ifHasPermission="['grupos:agregar']"
-        pButton 
-        label="Agregar" 
-        icon="pi pi-plus"
-        class="p-button-success"
-        (click)="abrirModal()">
+        pButton label="Agregar" icon="pi pi-plus"
+        class="p-button-success" (click)="abrirModal()">
       </button>
     </div>
 
-    <!-- TABLA -->
-    <p-table 
-      [value]="grupos" 
-      responsiveLayout="scroll"
-      class="p-datatable-striped">
-
-      <!-- HEADER -->
+    <p-table [value]="grupos" responsiveLayout="scroll" class="p-datatable-striped">
       <ng-template pTemplate="header">
         <tr>
           <th>Nivel</th>
@@ -55,102 +33,58 @@
           <th>Acciones</th>
         </tr>
       </ng-template>
-
-      <!-- BODY -->
-      <ng-template pTemplate="body" let-grupo let-i="rowIndex">
+      <ng-template pTemplate="body" let-grupo>
         <tr>
-          <td>{{ grupo.nivel }}</td>
-          <td>{{ grupo.autor }}</td>
-          <td>{{ grupo.nombre }}</td>
-          <td>{{ grupo.integrantes }}</td>
-          <td>{{ grupo.tickets }}</td>
-          <td>{{ grupo.descripcion }}</td>
-
+          <td>{{ grupo.level }}</td>
+          <td>{{ grupo.author }}</td>
+          <td>{{ grupo.name }}</td>
+          <td>{{ grupo.members_count }}</td>
+          <td>{{ grupo.tickets_count }}</td>
+          <td>{{ grupo.description }}</td>
           <td>
-            <button 
-    pButton 
-    icon="pi pi-chart-bar"
-    class="p-button-info p-button-sm mr-2"
-    (click)="verDashboard(grupo)">
-  </button>
-
-   <button *ifHasPermission="['grupos:editar']"
-    pButton 
-    icon="pi pi-pencil"
-    class="p-button-warning p-button-sm mr-2"
-    (click)="editarGrupo(grupo, i)">
-  </button>
-
-  <button *ifHasPermission="['grupos:eliminar']"
-    pButton 
-    icon="pi pi-trash"
-    class="p-button-danger p-button-sm"
-    (click)="eliminarGrupo(i)">
-  </button>
+            <button pButton icon="pi pi-chart-bar"
+              class="p-button-info p-button-sm mr-2"
+              (click)="verDashboard(grupo)">
+            </button>
+            <button *ifHasPermission="['grupos:editar']"
+              pButton icon="pi pi-pencil"
+              class="p-button-warning p-button-sm mr-2"
+              (click)="editarGrupo(grupo)">
+            </button>
+            <button *ifHasPermission="['grupos:eliminar']"
+              pButton icon="pi pi-trash"
+              class="p-button-danger p-button-sm"
+              (click)="eliminarGrupo(grupo)">
+            </button>
           </td>
         </tr>
       </ng-template>
-
     </p-table>
-
   </div>
-
 </div>
 
-<!-- MODAL -->
-<p-dialog 
-  header="Agregar Grupo"
-  [(visible)]="visible"
-  [modal]="true"
-  [style]="{width: '400px'}">
-
+<p-dialog [header]="modoEdicion ? 'Editar Grupo' : 'Agregar Grupo'"
+  [(visible)]="visible" [modal]="true" [style]="{width: '400px'}">
   <div class="p-fluid">
-
-    <div class="field mb-3">
-      <label>Nivel</label>
-      <input pInputText [(ngModel)]="nuevoGrupo.nivel">
-    </div>
-
-    <div class="field mb-3">
-      <label>Autor</label>
-      <input pInputText [(ngModel)]="nuevoGrupo.autor">
-    </div>
-
     <div class="field mb-3">
       <label>Nombre</label>
-      <input pInputText [(ngModel)]="nuevoGrupo.nombre">
+      <input pInputText [(ngModel)]="nuevoGrupo.name"/>
     </div>
-
     <div class="field mb-3">
-      <label>Integrantes</label>
-      <input type="number" pInputText [(ngModel)]="nuevoGrupo.integrantes">
+      <label>Nivel</label>
+      <input pInputText [(ngModel)]="nuevoGrupo.level"/>
     </div>
-
     <div class="field mb-3">
-      <label>Tickets</label>
-      <input type="number" pInputText [(ngModel)]="nuevoGrupo.tickets">
+      <label>Autor</label>
+      <input pInputText [(ngModel)]="nuevoGrupo.author"/>
     </div>
-
     <div class="field mb-3">
       <label>Descripción</label>
-      <input pInputText [(ngModel)]="nuevoGrupo.descripcion">
+      <input pInputText [(ngModel)]="nuevoGrupo.description"/>
     </div>
-
     <div class="flex justify-content-end gap-2 mt-4">
-      <button 
-        pButton 
-        label="Cancelar" 
-        class="p-button-secondary"
-        (click)="cerrarModal()">
-      </button>
-
-      <button 
-  pButton 
-  [label]="modoEdicion ? 'Actualizar' : 'Guardar'"
-  (click)="agregarGrupo()">
-</button>
+      <button pButton label="Cancelar" class="p-button-secondary" (click)="cerrarModal()"></button>
+      <button pButton [label]="modoEdicion ? 'Actualizar' : 'Guardar'" (click)="agregarGrupo()"></button>
     </div>
-
   </div>
-
 </p-dialog>

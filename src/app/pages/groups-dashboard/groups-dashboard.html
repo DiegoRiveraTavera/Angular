@@ -4,339 +4,240 @@
 
   <div class="flex justify-content-between mb-4">
     <h2>Dashboard del Grupo: {{ grupoNombre }}</h2>
-
-    <button
-      pButton
-      label="Crear Ticket"
-      icon="pi pi-plus"
-      class="p-button-success"
-      (click)="abrirModalTicket()">
+    <button pButton label="Crear Ticket" icon="pi pi-plus"
+      class="p-button-success" (click)="abrirModalTicket()">
     </button>
   </div>
 
+  <!-- INTEGRANTES -->
   <h3>Integrantes del grupo</h3>
 
   <div class="flex gap-2 mb-3">
-    <button
-      pButton
-      icon="pi pi-user-plus"
-      label="Agregar integrante"
-      class="p-button-success"
-      (click)="abrirModalIntegrante()">
+    <button pButton icon="pi pi-user-plus" label="Agregar integrante"
+      class="p-button-success" (click)="abrirModalIntegrante()">
     </button>
   </div>
 
   <ul class="mb-4">
-    <li
-      *ngFor="let integrante of integrantes; let i = index"
+    <li *ngFor="let integrante of integrantes"
       class="flex align-items-center gap-2 mb-2">
-
-      {{ integrante }}
-
-      <button
-        pButton
-        icon="pi pi-trash"
-        class="p-button-danger p-button-sm"
-        (click)="eliminarIntegrante(i)">
+      {{ integrante.name }}
+      <button pButton icon="pi pi-trash" class="p-button-danger p-button-sm"
+        (click)="eliminarIntegrante(integrante.id)">
       </button>
-
     </li>
   </ul>
 
   <!-- RESUMEN -->
-
   <div class="grid resumen">
-
-    <p-card header="Total">
-      {{ totalTickets }}
-    </p-card>
-
-    <p-card header="Pendientes">
-      {{ pendientes }}
-    </p-card>
-
-    <p-card header="En progreso">
-      {{ progreso }}
-    </p-card>
-
-    <p-card header="Hechos">
-      {{ hechos }}
-    </p-card>
-
-    <p-card header="Bloqueados">
-      {{ bloqueados }}
-    </p-card>
-
+    <p-card header="Total">{{ totalTickets }}</p-card>
+    <p-card header="Pendientes">{{ pendientes }}</p-card>
+    <p-card header="En progreso">{{ progreso }}</p-card>
+    <p-card header="Hechos">{{ hechos }}</p-card>
+    <p-card header="Bloqueados">{{ bloqueados }}</p-card>
   </div>
 
   <!-- KANBAN -->
-
   <h3 class="mt-5">Kanban</h3>
 
-<div class="kanban">
+  <div class="kanban">
 
-  <!-- PENDIENTE -->
+    <!-- PENDIENTE -->
+    <div class="column" cdkDropList
+      [cdkDropListConnectedTo]="['progresoList','cerradoList','bloqueadoList']"
+      id="abiertoList"
+      (cdkDropListDropped)="drop($event,'abierto')">
 
-  <div
-    class="column"
-    cdkDropList
-    (cdkDropListDropped)="drop($event,'pendiente')">
+      <h4>Abierto ({{ pendientes }})</h4>
 
-    <h4>Pendiente ({{ pendientes }})</h4>
+      <p-card *ngFor="let t of pendientesList" cdkDrag [cdkDragData]="t" class="mb-2">
+        <b>{{ t.title }}</b>
+        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+      </p-card>
 
-    <p-card
-      *ngFor="let t of pendientesList"
-      cdkDrag
-      [cdkDragData]="t">
+    </div>
 
-      <b>{{ t.titulo }}</b>
-      <div class="text-sm">Asignado: {{ t.asignado }}</div>
+    <!-- EN PROGRESO -->
+    <div class="column" cdkDropList
+      [cdkDropListConnectedTo]="['abiertoList','cerradoList','bloqueadoList']"
+      id="progresoList"
+      (cdkDropListDropped)="drop($event,'en_progreso')">
 
-    </p-card>
+      <h4>En progreso ({{ progreso }})</h4>
 
-  </div>
+      <p-card *ngFor="let t of progresoList" cdkDrag [cdkDragData]="t" class="mb-2">
+        <b>{{ t.title }}</b>
+        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+      </p-card>
 
-  <!-- EN PROGRESO -->
+    </div>
 
-  <div
-    class="column"
-    cdkDropList
-    (cdkDropListDropped)="drop($event,'progreso')">
+    <!-- HECHO -->
+    <div class="column" cdkDropList
+      [cdkDropListConnectedTo]="['abiertoList','progresoList','bloqueadoList']"
+      id="cerradoList"
+      (cdkDropListDropped)="drop($event,'cerrado')">
 
-    <h4>En progreso ({{ progreso }})</h4>
+      <h4>Cerrado ({{ hechos }})</h4>
 
-    <p-card
-      *ngFor="let t of progresoList"
-      cdkDrag
-      [cdkDragData]="t">
+      <p-card *ngFor="let t of hechosList" cdkDrag [cdkDragData]="t" class="mb-2">
+        <b>{{ t.title }}</b>
+        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+      </p-card>
 
-      <b>{{ t.titulo }}</b>
+    </div>
 
-    </p-card>
+    <!-- BLOQUEADO -->
+    <div class="column" cdkDropList
+      [cdkDropListConnectedTo]="['abiertoList','progresoList','cerradoList']"
+      id="bloqueadoList"
+      (cdkDropListDropped)="drop($event,'bloqueado')">
 
-  </div>
+      <h4>Bloqueado ({{ bloqueados }})</h4>
 
-  <!-- HECHO -->
+      <p-card *ngFor="let t of bloqueadosList" cdkDrag [cdkDragData]="t" class="mb-2">
+        <b>{{ t.title }}</b>
+        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+      </p-card>
 
-  <div
-    class="column"
-    cdkDropList
-    (cdkDropListDropped)="drop($event,'hecho')">
-
-    <h4>Hecho ({{ hechos }})</h4>
-
-    <p-card
-      *ngFor="let t of hechosList"
-      cdkDrag
-      [cdkDragData]="t">
-
-      <b>{{ t.titulo }}</b>
-
-    </p-card>
-
-  </div>
-
-  <!-- BLOQUEADO -->
-
-  <div
-    class="column"
-    cdkDropList
-    (cdkDropListDropped)="drop($event,'bloqueado')">
-
-    <h4>Bloqueado ({{ bloqueados }})</h4>
-
-    <p-card
-      *ngFor="let t of bloqueadosList"
-      cdkDrag
-      [cdkDragData]="t">
-
-      <b>{{ t.titulo }}</b>
-
-    </p-card>
+    </div>
 
   </div>
-
-</div>
 
   <!-- FILTROS -->
-
   <h3 class="mt-5">Filtros</h3>
 
   <div class="flex gap-2 mb-4">
-
-    <button
-      pButton
-      label="Todos"
+    <button pButton label="Todos"
+      [class.p-button-outlined]="filtroActivo !== 'todos'"
       (click)="setFiltro('todos')">
     </button>
-
-    <button
-      pButton
-      label="Mis Tickets"
+    <button pButton label="Mis Tickets"
+      [class.p-button-outlined]="filtroActivo !== 'mis'"
       (click)="setFiltro('mis')">
     </button>
-
-    <button
-      pButton
-      label="Pendientes"
+    <button pButton label="Pendientes"
+      [class.p-button-outlined]="filtroActivo !== 'pendientes'"
       (click)="setFiltro('pendientes')">
     </button>
-
-    <button
-      pButton
-      label="Alta Prioridad"
-      class="p-button-danger"
+    <button pButton label="Alta Prioridad" class="p-button-danger"
+      [class.p-button-outlined]="filtroActivo !== 'alta'"
       (click)="setFiltro('alta')">
     </button>
-
   </div>
 
   <!-- TABLA -->
-
   <h3>Tickets</h3>
 
-  <p-table [value]="ticketsFiltrados">
+  <p-table [value]="ticketsFiltrados" [paginator]="true" [rows]="10">
 
     <ng-template pTemplate="header">
       <tr>
-        <th>Título</th>
+        <th pSortableColumn="title">Título <p-sortIcon field="title"></p-sortIcon></th>
         <th>Asignado</th>
-        <th>Prioridad</th>
-        <th>Estado</th>
-        <th>Fecha</th>
+        <th pSortableColumn="priority">Prioridad <p-sortIcon field="priority"></p-sortIcon></th>
+        <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
+        <th pSortableColumn="created_at">Fecha <p-sortIcon field="created_at"></p-sortIcon></th>
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-ticket>
       <tr>
-        <td>{{ ticket.titulo }}</td>
-        <td>{{ ticket.asignado }}</td>
-        <td>{{ ticket.prioridad }}</td>
-        <td>{{ ticket.estado }}</td>
-        <td>{{ ticket.fecha }}</td>
+        <td>{{ ticket.title }}</td>
+        <td>{{ ticket.assigned_to_name || 'Sin asignar' }}</td>
+        <td>
+          <p-tag [value]="ticket.priority" [severity]="getPrioritySeverity(ticket.priority)"></p-tag>
+        </td>
+        <td>{{ ticket.status }}</td>
+        <td>{{ ticket.created_at | date:'dd/MM/yyyy' }}</td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center">No hay tickets</td>
       </tr>
     </ng-template>
 
   </p-table>
 
-  <!-- MODAL CREAR TICKET -->
+</div>
 
-<p-dialog
-  header="Crear Nuevo Ticket"
-  [(visible)]="modalTicket"
-  [modal]="true"
-  [style]="{width:'450px'}">
-
+<!-- MODAL CREAR TICKET -->
+<p-dialog header="Crear Nuevo Ticket"
+  [(visible)]="modalTicket" [modal]="true" [style]="{width:'450px'}">
   <div class="p-fluid">
 
     <div class="field mb-3">
-      <label>Título</label>
-      <input pInputText [(ngModel)]="nuevoTicket.titulo">
+      <label>Título *</label>
+      <input pInputText [(ngModel)]="nuevoTicket.title" placeholder="Título del ticket">
     </div>
 
     <div class="field mb-3">
       <label>Descripción</label>
-
-      <textarea
-        rows="3"
-        class="p-inputtext w-full"
-        [(ngModel)]="nuevoTicket.descripcion">
+      <textarea rows="3" class="p-inputtext w-full"
+        [(ngModel)]="nuevoTicket.description" placeholder="Descripción del ticket">
       </textarea>
-
-    </div>
-
-    <div class="grid">
-
-      <div class="col-6 field">
-        <label>Estado</label>
-
-        <select [(ngModel)]="nuevoTicket.estado">
-          <option value="pendiente">Pendiente</option>
-          <option value="progreso">En progreso</option>
-          <option value="hecho">Hecho</option>
-          <option value="bloqueado">Bloqueado</option>
-        </select>
-
-      </div>
-
-      <div class="col-6 field">
-        <label>Prioridad</label>
-
-        <select [(ngModel)]="nuevoTicket.prioridad">
-          <option>Alta</option>
-          <option>Media</option>
-          <option>Baja</option>
-        </select>
-
-      </div>
-
     </div>
 
     <div class="field mb-3">
-      <label>Asignado a</label>
+      <label>Estado</label>
+      <select [(ngModel)]="nuevoTicket.status" class="p-inputtext w-full">
+        <option value="abierto">Abierto</option>
+        <option value="en_progreso">En progreso</option>
+        <option value="cerrado">Cerrado</option>
+        <option value="bloqueado">Bloqueado</option>
+      </select>
+    </div>
 
-      <input
-        pInputText
-        [(ngModel)]="nuevoTicket.asignado">
+    <div class="field mb-3">
+      <label>Prioridad</label>
+      <select [(ngModel)]="nuevoTicket.priority" class="p-inputtext w-full">
+        <option value="baja">Baja</option>
+        <option value="media">Media</option>
+        <option value="alta">Alta</option>
+      </select>
+    </div>
+
+    <div class="field mb-3">
+      <label>Asignar a</label>
+      <select [(ngModel)]="nuevoTicket.assigned_to" class="p-inputtext w-full">
+        <option value="">-- Sin asignar --</option>
+        <option *ngFor="let u of integrantes" [value]="u.id">{{ u.name }}</option>
+      </select>
     </div>
 
     <div class="flex justify-content-end gap-2">
-
-      <button
-        pButton
-        label="Cancelar"
-        class="p-button-secondary"
-        (click)="cerrarModalTicket()">
-      </button>
-
-      <button
-        pButton
-        label="Crear"
-        class="p-button-success"
-        (click)="crearTicket()">
-      </button>
-
+      <button pButton label="Cancelar" class="p-button-secondary" (click)="cerrarModalTicket()"></button>
+      <button pButton label="Crear" class="p-button-success" (click)="crearTicket()"></button>
     </div>
 
   </div>
-
 </p-dialog>
 
 <!-- MODAL AGREGAR INTEGRANTE -->
-<p-dialog
-  header="Agregar integrante"
-  [(visible)]="modalIntegrante"
-  [modal]="true"
-  [style]="{width:'350px'}">
-
+<p-dialog header="Agregar integrante"
+  [(visible)]="modalIntegrante" [modal]="true" [style]="{width:'350px'}">
   <div class="p-fluid">
 
     <div class="field mb-3">
-      <label>Nombre del integrante</label>
-      <input pInputText [(ngModel)]="nuevoIntegrante">
+      <label>Seleccionar usuario</label>
+      <select [(ngModel)]="nuevoIntegranteId" class="p-inputtext w-full">
+        <option value="">-- Selecciona --</option>
+        <option *ngFor="let u of usuariosDisponibles" [value]="u.id">{{ u.name }}</option>
+      </select>
     </div>
 
     <div class="flex justify-content-end gap-2">
-
-      <button
-        pButton
-        label="Cancelar"
-        class="p-button-secondary"
-        (click)="modalIntegrante=false">
-      </button>
-
-      <button
-        pButton
-        label="Agregar"
-        class="p-button-success"
-        (click)="agregarIntegrante()">
-      </button>
-
+      <button pButton label="Cancelar" class="p-button-secondary" (click)="modalIntegrante=false"></button>
+      <button pButton label="Agregar" class="p-button-success" (click)="agregarIntegrante()"></button>
     </div>
 
   </div>
-
 </p-dialog>
 
-
-</div>
+<p-toast></p-toast>
