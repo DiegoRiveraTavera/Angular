@@ -1,26 +1,40 @@
 <div class="flex align-items-center justify-content-center min-h-screen surface-ground">
+  <p-toast></p-toast>
   <p-card header="Registro" class="w-full sm:w-30rem shadow-4 border-round-xl">
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-fluid">
 
       <div class="field mb-3">
-        <label>Usuario</label>
-        <input pInputText formControlName="usuario" class="w-full"/>
+        <label>Nombre completo</label>
+        <input pInputText formControlName="name" class="w-full"/>
+        <small class="p-error"
+          *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+          El nombre es requerido.
+        </small>
       </div>
 
       <div class="field mb-3">
         <label>Email</label>
         <input pInputText formControlName="email" class="w-full"/>
+        <small class="p-error"
+          *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          Ingresa un email válido.
+        </small>
       </div>
 
       <div class="field mb-3">
-        <label>Nombre completo</label>
-        <input pInputText formControlName="nombreCompleto" class="w-full"/>
+        <label>Calle</label>
+        <input pInputText formControlName="calle" class="w-full"/>
       </div>
 
       <div class="field mb-3">
-        <label>Dirección</label>
-        <input pInputText formControlName="direccion" class="w-full"/>
+        <label>Colonia</label>
+        <input pInputText formControlName="colonia" class="w-full"/>
+      </div>
+
+      <div class="field mb-3">
+        <label>No. Exterior</label>
+        <input pInputText formControlName="no_exterior" class="w-full"/>
       </div>
 
       <div class="field mb-3">
@@ -34,11 +48,7 @@
 
       <div class="field mb-3">
         <label>Contraseña</label>
-        <p-password formControlName="password"
-                    [feedback]="false"
-                    [toggleMask]="true"
-                    class="w-full">
-        </p-password>
+        <p-password formControlName="password" [feedback]="false" [toggleMask]="true" class="w-full"/>
         <small class="p-error"
           *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
           Mínimo 10 caracteres y debe contener #
@@ -47,14 +57,9 @@
 
       <div class="field mb-3">
         <label>Confirmar contraseña</label>
-        <p-password formControlName="confirmPassword"
-                    [feedback]="false"
-                    [toggleMask]="true"
-                    class="w-full">
-        </p-password>
+        <p-password formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" class="w-full"/>
         <small class="p-error"
-          *ngIf="registerForm.errors?.['passwordsMismatch'] &&
-                 registerForm.get('confirmPassword')?.touched">
+          *ngIf="registerForm.errors?.['passwordsMismatch'] && registerForm.get('confirmPassword')?.touched">
           Las contraseñas no coinciden.
         </small>
       </div>
@@ -62,25 +67,21 @@
       <div class="field-checkbox mb-4">
         <p-checkbox formControlName="mayorEdad" binary="true"></p-checkbox>
         <label class="ml-2">Declaro que soy mayor de edad</label>
+        <br>
+        <small class="p-error"
+          *ngIf="registerForm.get('mayorEdad')?.invalid && registerForm.get('mayorEdad')?.touched">
+          Debes ser mayor de edad para registrarte.
+        </small>
       </div>
 
-      <button 
-        pButton 
-        label="Registrarse" 
-        type="submit"
-        class="w-full mb-3"
-        [disabled]="registerForm.invalid">
+      <button pButton label="Registrarse" type="submit"
+        class="w-full mb-3" [loading]="loading">
       </button>
 
-      <button 
-        pButton 
-        label="¿Ya tienes cuenta? Inicia sesión"
-        type="button"
-        class="w-full p-button-text"
-        routerLink="/login">
+      <button pButton label="¿Ya tienes cuenta? Inicia sesión"
+        type="button" class="w-full p-button-text" routerLink="/login">
       </button>
 
     </form>
-
   </p-card>
 </div>
