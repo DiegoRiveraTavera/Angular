@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { HasPermissionDirective } from '../../directives/has-permission.directive';
 import { GroupsService, Group } from '../../services/group.service';
+import { UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-groups',
@@ -43,22 +44,26 @@ export class Groups implements OnInit {
   constructor(
     private router: Router,
     private groupsSvc: GroupsService,
+    private usersSvc: UsersService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit() {
-    this.cargarGrupos();
-  }
+  this.cargarGrupos();
+}
 
-  cargarGrupos() {
-    this.groupsSvc.getAll().subscribe({
-      next: (data) => this.grupos = data,
-      error: () => this.messageService.add({
-        severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los grupos'
-      })
-    });
-  }
+cargarGrupos() {
+  const currentUser = this.usersSvc.currentUser();
+  if (!currentUser) return;
+
+  this.groupsSvc.getByUser(currentUser.id).subscribe({
+    next: (data) => this.grupos = data,
+    error: () => this.messageService.add({
+      severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los grupos'
+    })
+  });
+}
 
   abrirModal() {
     this.resetFormulario();

@@ -56,13 +56,16 @@ export class GroupDashboard implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit() {
-    this.grupoId = this.route.snapshot.paramMap.get('nombre') || '';
-    this.cargarGrupo();
-    this.cargarTickets();
-    this.cargarIntegrantes();
-    this.cargarUsuariosDisponibles();
-  }
+ currentUserId: string = '';
+
+ngOnInit() {
+  this.grupoId = this.route.snapshot.paramMap.get('nombre') || '';
+  this.currentUserId = this.usersSvc.currentUser()?.id || ''; // ← agregar
+  this.cargarGrupo();
+  this.cargarTickets();
+  this.cargarIntegrantes();
+  this.cargarUsuariosDisponibles();
+}
 
   cargarGrupo() {
     this.groupsSvc.getById(this.grupoId).subscribe({
@@ -145,19 +148,30 @@ export class GroupDashboard implements OnInit {
   // ⚠️ El problema era que el template usaba 'pendiente'/'progreso'/'hecho'
   // pero la BD guarda 'abierto'/'en progreso'/'cerrado'
   drop(event: CdkDragDrop<any[]>, nuevoEstado: string) {
-    const ticket: Ticket = event.item.data;
-    if (ticket.status === nuevoEstado) return;
+  const ticket: Ticket = event.item.data;
+  const currentUser = this.usersSvc.currentUser();
 
-    this.ticketsSvc.updateStatus(ticket.id, nuevoEstado).subscribe({
-      next: () => {
-        ticket.status = nuevoEstado; // actualizar local inmediatamente
-        // NO llamar cargarTickets() aquí — ya actualizamos local, evita flickering
-      },
-      error: () => this.messageService.add({
-        severity: 'error', summary: 'Error', detail: 'No se pudo actualizar el estado'
-      })
+  // ← solo puede mover sus propios tickets
+  if (ticket.assigned_to !== currentUser?.id) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: 'Sin permiso',
+      detail: 'Solo puedes mover tus propios tickets'
     });
+    return;
   }
+
+  if (ticket.status === nuevoEstado) return;
+
+  this.ticketsSvc.updateStatus(ticket.id, nuevoEstado).subscribe({
+    next: () => {
+      ticket.status = nuevoEstado;
+    },
+    error: () => this.messageService.add({
+      severity: 'error', summary: 'Error', detail: 'No se pudo actualizar el estado'
+    })
+  });
+}
 
   // Filtros
   setFiltro(filtro: string) { this.filtroActivo = filtro; }

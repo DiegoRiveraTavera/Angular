@@ -51,4 +51,8 @@ removeMember(groupId: string, userId: string): Observable<any> {
   return this.http.delete(`${this.api}/${groupId}/members/${userId}`);
 }
 
+getByUser(userId: string): Observable<Group[]> {
+  return this.http.get<Group[]>(`${this.api}/user/${userId}`);
+}
+
 }

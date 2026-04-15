@@ -50,11 +50,17 @@
 
       <h4>Abierto ({{ pendientes }})</h4>
 
-      <p-card *ngFor="let t of pendientesList" cdkDrag [cdkDragData]="t" class="mb-2">
-        <b>{{ t.title }}</b>
-        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
-        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
-      </p-card>
+      <p-card
+  *ngFor="let t of pendientesList"
+  cdkDrag
+  [cdkDragData]="t"
+  [cdkDragDisabled]="t.assigned_to !== currentUserId"
+  [class.opacity-50]="t.assigned_to !== currentUserId"
+  class="mb-2">
+  <b>{{ t.title }}</b>
+  <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+  <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+</p-card>
 
     </div>
 
@@ -66,11 +72,17 @@
 
       <h4>En progreso ({{ progreso }})</h4>
 
-      <p-card *ngFor="let t of progresoList" cdkDrag [cdkDragData]="t" class="mb-2">
-        <b>{{ t.title }}</b>
-        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
-        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
-      </p-card>
+      <p-card
+  *ngFor="let t of progresoList"
+  cdkDrag
+  [cdkDragData]="t"
+  [cdkDragDisabled]="t.assigned_to !== currentUserId"
+  [class.opacity-50]="t.assigned_to !== currentUserId"
+  class="mb-2">
+  <b>{{ t.title }}</b>
+  <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+  <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+</p-card>
 
     </div>
 
@@ -82,11 +94,17 @@
 
       <h4>Cerrado ({{ hechos }})</h4>
 
-      <p-card *ngFor="let t of hechosList" cdkDrag [cdkDragData]="t" class="mb-2">
-        <b>{{ t.title }}</b>
-        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
-        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
-      </p-card>
+      <p-card
+  *ngFor="let t of hechosList"
+  cdkDrag
+  [cdkDragData]="t"
+  [cdkDragDisabled]="t.assigned_to !== currentUserId"
+  [class.opacity-50]="t.assigned_to !== currentUserId"
+  class="mb-2">
+  <b>{{ t.title }}</b>
+  <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+  <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+</p-card>
 
     </div>
 
@@ -98,11 +116,17 @@
 
       <h4>Bloqueado ({{ bloqueados }})</h4>
 
-      <p-card *ngFor="let t of bloqueadosList" cdkDrag [cdkDragData]="t" class="mb-2">
-        <b>{{ t.title }}</b>
-        <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
-        <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
-      </p-card>
+      <p-card
+  *ngFor="let t of bloqueadosList"
+  cdkDrag
+  [cdkDragData]="t"
+  [cdkDragDisabled]="t.assigned_to !== currentUserId"
+  [class.opacity-50]="t.assigned_to !== currentUserId"
+  class="mb-2">
+  <b>{{ t.title }}</b>
+  <div class="text-sm text-500">{{ t.assigned_to_name || 'Sin asignar' }}</div>
+  <p-tag [value]="t.priority" [severity]="getPrioritySeverity(t.priority)" class="mt-1"></p-tag>
+</p-card>
 
     </div>
 
