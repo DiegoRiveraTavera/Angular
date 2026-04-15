@@ -8,17 +8,18 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { TagModule } from 'primeng/tag';
 import { MessageService } from 'primeng/api';
 import { UsersService } from '../../services/users.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../app/enviroments/enviroment';
+import { TicketsService } from '../../services/tickets.service';
 
 @Component({
   selector: 'app-user',
   standalone: true,
   imports: [
     Sidebar, CommonModule, CardModule, ButtonModule,
-    FormsModule, CheckboxModule, InputTextModule, TableModule, ToastModule
+    FormsModule, CheckboxModule, InputTextModule,
+    TableModule, ToastModule, TagModule
   ],
   templateUrl: './user.html',
   styleUrl: './user.css',
@@ -26,7 +27,6 @@ import { environment } from '../../../app/enviroments/enviroment';
 })
 export class User implements OnInit {
 
-  // Datos del perfil mapeados a tu BD
   usuario = {
     name: '',
     email: '',
@@ -43,7 +43,7 @@ export class User implements OnInit {
 
   constructor(
     private usersSvc: UsersService,
-    private http: HttpClient,
+    private ticketsSvc: TicketsService,
     private messageService: MessageService
   ) {}
 
@@ -70,17 +70,9 @@ export class User implements OnInit {
   }
 
   cargarTickets() {
-    this.http.get<any[]>(`${environment.apiUrl}/tickets`).subscribe({
-      next: (tickets) => {
-        // Filtrar solo los tickets asignados al usuario actual
-        this.tickets = tickets.filter(t =>
-          t.assigned_to === this.userId || t.created_by === this.userId
-        );
-      },
-      error: () => {
-        // Si la API de tickets aún no está conectada, dejar vacío
-        this.tickets = [];
-      }
+    this.ticketsSvc.getByUser(this.userId).subscribe({
+      next: (data) => this.tickets = data,
+      error: () => this.tickets = []
     });
   }
 
@@ -93,31 +85,39 @@ export class User implements OnInit {
   }
 
   guardarPerfil() {
-    this.http.put(`${environment.apiUrl}/users/${this.userId}`, this.usuario).subscribe({
+    this.usersSvc.updateProfile(this.userId, this.usuario).subscribe({
       next: () => {
         this.messageService.add({
-          severity: 'success',
-          summary: 'Guardado',
-          detail: 'Perfil actualizado correctamente'
+          severity: 'success', summary: 'Guardado', detail: 'Perfil actualizado'
         });
         this.editando = false;
       },
-      error: () => {
-        // Si el endpoint PUT aún no existe, solo cerramos edición
-        this.editando = false;
-      }
+      error: () => { this.editando = false; }
     });
   }
 
-  get abiertos() {
-    return this.tickets.filter(t => t.status === 'abierto').length;
+  // ─── Helpers de prioridad ─────────────────────────────────
+  getPrioritySeverity(priority: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | null | undefined {
+    switch (priority) {
+      case 'alta': return 'danger';
+      case 'media': return 'warn';
+      case 'baja': return 'success';
+      default: return 'info';
+    }
   }
 
-  get progreso() {
-    return this.tickets.filter(t => t.status === 'en progreso').length;
+  getStatusSeverity(status: string): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | null | undefined {
+    switch (status) {
+      case 'abierto': return 'info';
+      case 'en_progreso': return 'warn';
+      case 'cerrado': return 'success';
+      case 'bloqueado': return 'danger';
+      default: return 'secondary';
+    }
   }
 
-  get hechos() {
-    return this.tickets.filter(t => t.status === 'cerrado').length;
-  }
+  // ─── Resumen ──────────────────────────────────────────────
+  get abiertos() { return this.tickets.filter(t => t.status === 'abierto').length; }
+  get progreso() { return this.tickets.filter(t => t.status === 'en_progreso').length; }
+  get hechos() { return this.tickets.filter(t => t.status === 'cerrado').length; }
 }

@@ -8,13 +8,13 @@ export interface Ticket {
   title: string;
   description: string;
   status: string;
+  priority: string;
   created_by: string;
   assigned_to: string;
   assigned_to_name?: string;
   created_by_name?: string;
   group_id: string;
   created_at: string;
-  priority: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +29,11 @@ export class TicketsService {
 
   getByGroup(groupId: string): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`${this.api}/group/${groupId}`);
+  }
+
+  // ✅ tickets donde el usuario es creador o asignado
+  getByUser(userId: string): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.api}/user/${userId}`);
   }
 
   getById(id: string): Observable<Ticket> {

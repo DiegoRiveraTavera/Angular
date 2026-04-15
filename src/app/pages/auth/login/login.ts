@@ -30,27 +30,16 @@ export class LoginComponent {
   ) {}
 
   login() {
-    if (!this.email || !this.password) {
-      this.messageService.add({ severity: 'warn', summary: 'Atención', detail: 'Ingresa email y contraseña' });
-      return;
+  if (!this.email || !this.password) return;
+  this.loading = true;
+
+  this.usersSvc.login(this.email, this.password).subscribe({
+    next: () => this.router.navigate(['/home']),
+    error: (err) => {
+      this.loading = false;
+      const msg = err.status === 401 ? 'Credenciales incorrectas' : 'Error al conectar';
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: msg });
     }
-
-    this.loading = true;
-
-    this.usersSvc.login(this.email, this.password).subscribe({
-      next: (user) => {
-  // El usuario viene de la API pero sin permisos
-  // Los permisos se manejan en frontend por ahora
-  this.loading = false;
-  this.router.navigate(['/home']);
-},
-      error: (err) => {
-        this.loading = false;
-        const msg = err.status === 401
-          ? 'Credenciales incorrectas'
-          : 'Error al conectar con el servidor';
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: msg });
-      }
-    });
-  }
+  });
+}
 }

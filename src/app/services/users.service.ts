@@ -19,20 +19,31 @@ export class UsersService {
   constructor(private http: HttpClient) {}
 
   // ─── AUTH ─────────────────────────────────────────────────
+login(email: string, password: string): Observable<{token: string, user: User}> {
+  return this.http.post<{token: string, user: User}>(`${this.api}/login`, { email, password }).pipe(
+    tap(res => {
+      this.currentUserSignal.set(res.user);
+      localStorage.setItem('current_user', JSON.stringify(res.user));
+      localStorage.setItem('token', res.token);
+    })
+  );
+}
 
-  login(email: string, password: string): Observable<User> {
-    return this.http.post<User>(`${this.api}/login`, { email, password }).pipe(
-      tap(user => {
-        this.currentUserSignal.set(user);
-        localStorage.setItem('current_user', JSON.stringify(user));
-      })
-    );
-  }
+logout(): void {
+  this.currentUserSignal.set(null);
+  localStorage.removeItem('current_user');
+  localStorage.removeItem('token');
+}
 
-  logout(): void {
-    this.currentUserSignal.set(null);
-    localStorage.removeItem('current_user');
+private loadFromStorage(): User | null {
+  try {
+    const raw = localStorage.getItem('current_user');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
   }
+}
+
 
   // ─── HTTP CRUD ────────────────────────────────────────────
 
@@ -109,12 +120,7 @@ export class UsersService {
 
   // ─── STORAGE ──────────────────────────────────────────────
 
-  private loadFromStorage(): User | null {
-    try {
-      const raw = localStorage.getItem('current_user');
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  }
+  updateProfile(id: string, data: Partial<User>): Observable<User> {
+  return this.http.put<User>(`${this.api}/${id}`, data);
+}
 }

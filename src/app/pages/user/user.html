@@ -65,45 +65,68 @@
     </p-card>
   </div>
 
-  <!-- RESUMEN TICKETS -->
-  <h1>Mis Tickets</h1>
+  <!-- RESUMEN -->
+  <h2 class="mb-3">Mis Tickets</h2>
 
   <div class="grid mb-4">
     <div class="col">
       <p-card>
-        <h4>Abiertos</h4>
-        <h2>{{ abiertos }}</h2>
+        <div class="text-center">
+          <div class="text-color-secondary mb-1">Abiertos</div>
+          <div class="text-4xl font-bold text-blue-500">{{ abiertos }}</div>
+        </div>
       </p-card>
     </div>
     <div class="col">
       <p-card>
-        <h4>En progreso</h4>
-        <h2>{{ progreso }}</h2>
+        <div class="text-center">
+          <div class="text-color-secondary mb-1">En progreso</div>
+          <div class="text-4xl font-bold text-orange-500">{{ progreso }}</div>
+        </div>
       </p-card>
     </div>
     <div class="col">
       <p-card>
-        <h4>Cerrados</h4>
-        <h2>{{ hechos }}</h2>
+        <div class="text-center">
+          <div class="text-color-secondary mb-1">Cerrados</div>
+          <div class="text-4xl font-bold text-green-500">{{ hechos }}</div>
+        </div>
       </p-card>
     </div>
   </div>
 
-  <!-- TABLA TICKETS -->
+  <!-- TABLA -->
   <p-card header="Mis Tickets">
-    <p-table [value]="tickets">
-      <ng-template pTemplate="emptymessage">
+    <p-table [value]="tickets" [paginator]="true" [rows]="10">
+
+      <ng-template pTemplate="header">
         <tr>
-      <td colspan="3" class="text-center p-4">No tienes tickets asignados</td>
-    </tr>
-  </ng-template>
+          <th pSortableColumn="title">Título <p-sortIcon field="title"></p-sortIcon></th>
+          <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
+          <th pSortableColumn="priority">Prioridad <p-sortIcon field="priority"></p-sortIcon></th>
+          <th pSortableColumn="created_at">Fecha <p-sortIcon field="created_at"></p-sortIcon></th>
+        </tr>
+      </ng-template>
+
       <ng-template pTemplate="body" let-ticket>
         <tr>
           <td>{{ ticket.title }}</td>
-          <td>{{ ticket.status }}</td>
-          <td>{{ ticket.created_at | date:'shortDate' }}</td>
+          <td>
+            <p-tag [value]="ticket.status" [severity]="getStatusSeverity(ticket.status)"></p-tag>
+          </td>
+          <td>
+            <p-tag [value]="ticket.priority" [severity]="getPrioritySeverity(ticket.priority)"></p-tag>
+          </td>
+          <td>{{ ticket.created_at | date:'dd/MM/yyyy' }}</td>
         </tr>
       </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="4" class="text-center p-4">No tienes tickets asignados</td>
+        </tr>
+      </ng-template>
+
     </p-table>
   </p-card>
 
