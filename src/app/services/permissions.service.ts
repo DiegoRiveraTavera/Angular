@@ -38,6 +38,8 @@ export class PermissionsService {
   hasAllPermissions(perms: string[]): boolean {
     return perms.every(p => this.hasPermission(p));
   }
+
+  
 }
   
 /*

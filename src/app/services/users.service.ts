@@ -16,7 +16,7 @@ export class UsersService {
   currentUser = computed(() => this.currentUserSignal());
   isLoggedIn = computed(() => this.currentUserSignal() !== null);
 
-  constructor(private http: HttpClient) {}
+  constructor(public http: HttpClient) {}
 
   // ─── AUTH ─────────────────────────────────────────────────
 login(email: string, password: string): Observable<{token: string, user: User}> {

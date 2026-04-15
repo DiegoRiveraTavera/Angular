@@ -34,7 +34,12 @@ export class LoginComponent {
   this.loading = true;
 
   this.usersSvc.login(this.email, this.password).subscribe({
-    next: () => this.router.navigate(['/home']),
+    // login.ts — en el next:
+next: (res) => {
+  // Los permisos ya vienen en res.user.permissions desde la BD
+  this.permsSvc.setPermissions(res.user.permissions || []);
+  this.router.navigate(['/home']);
+},
     error: (err) => {
       this.loading = false;
       const msg = err.status === 401 ? 'Credenciales incorrectas' : 'Error al conectar';

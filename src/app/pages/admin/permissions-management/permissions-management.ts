@@ -20,6 +20,7 @@ import { Sidebar } from '../../../components/sidebar/sidebar';
 // Servicios y Models
 import { UsersService } from '../../../services/users.service';
 import { User, AVAILABLE_PERMISSIONS } from '../../../models/user.model';
+import { environment } from '../../../../app/enviroments/enviroment';
 
 @Component({
   selector: 'app-permissions-management',
@@ -72,11 +73,12 @@ export class PermissionsManagementComponent implements OnInit {
 
   loadUsers() {
   this.usersService.getAll().subscribe({
-    next: (users) => this.users = users,
+    next: (users) => {
+      this.users = users;  // ← asegúrate que esto recibe los permisos
+      console.log('usuarios cargados:', users); // ← verifica en consola
+    },
     error: () => this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'No se pudieron cargar los usuarios'
+      severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los usuarios'
     })
   });
 }
@@ -92,75 +94,95 @@ export class PermissionsManagementComponent implements OnInit {
   }
 
   createUser() {
-    if (!this.newUserForm.name || !this.newUserForm.email) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Validación',
-        detail: 'Nombre y email son requeridos'
+  if (!this.newUserForm.name || !this.newUserForm.email) {
+    this.messageService.add({ severity: 'warn', summary: 'Validación', detail: 'Nombre y email requeridos' });
+    return;
+  }
+
+  // Crear usuario vía API — necesita contraseña temporal
+  this.usersService.http.post(`${environment.apiUrl}/users/register`, {
+    name: this.newUserForm.name,
+    email: this.newUserForm.email,
+    password: 'Temporal#123',   // contraseña temporal
+    active: this.newUserForm.active
+  }).subscribe({
+    next: () => {
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Usuario creado' });
+      this.visibleUserDialog = false;
+      this.loadUsers();
+    },
+    error: (err) => this.messageService.add({
+      severity: 'error', summary: 'Error',
+      detail: err.error?.message || 'No se pudo crear el usuario'
+    })
+  });
+}
+
+deleteUser(user: User) {
+  this.confirmationService.confirm({
+    message: `¿Deseas eliminar a ${user.name}?`,
+    header: 'Confirmar',
+    icon: 'pi pi-exclamation-triangle',
+    accept: () => {
+      this.usersService.http.delete(`${environment.apiUrl}/users/${user.id}`).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Eliminado', detail: `Usuario ${user.name} eliminado` });
+          this.loadUsers();
+        }
       });
-      return;
     }
+  });
+}
 
-    const newUser = this.usersService.createUser({
-      name: this.newUserForm.name,
-      email: this.newUserForm.email,
-      active: this.newUserForm.active,
-      permissions: []
-    });
-
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Éxito',
-      detail: `Usuario ${newUser.name} creado correctamente`
-    });
-
-    this.visibleUserDialog = false;
-    this.loadUsers();
-  }
-
-  deleteUser(user: User) {
-    this.confirmationService.confirm({
-      message: `¿Deseas eliminar a ${user.name}?`,
-      header: 'Confirmar',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.usersService.deleteUser(user.id);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Eliminado',
-          detail: `Usuario ${user.name} eliminado`
-        });
-        this.loadUsers();
-      }
-    });
-  }
-
-  toggleUserActive(user: User) {
-    this.usersService.updateUser(user.id, { active: !user.active });
-    this.loadUsers();
-  }
+toggleUserActive(user: User) {
+  this.usersService.updateProfile(user.id, { active: !user.active }).subscribe({
+    next: () => this.loadUsers()
+  });
+}
 
   // ============= PERMISOS =============
   openPermissionsDialog(user: User) {
-    this.selectedUser = user;
-    this.selectedPermissions = [...user.permissions];
-    this.visiblePermissionsDialog = true;
-  }
+  this.selectedUser = { ...user };
+  this.selectedPermissions = [];
+
+  // Cargar permisos frescos desde la API
+  this.usersService.getById(user.id).subscribe({
+    next: (freshUser) => {
+      this.selectedUser = freshUser;
+      this.selectedPermissions = freshUser.permissions ? [...freshUser.permissions] : [];
+      console.log('permisos frescos:', this.selectedPermissions);
+    }
+  });
+
+  this.visiblePermissionsDialog = true;
+}
 
   savePermissions() {
-    if (!this.selectedUser) return;
+  if (!this.selectedUser) return;
 
-    this.usersService.assignPermissions(this.selectedUser.id, this.selectedPermissions);
-    
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Éxito',
-      detail: `Permisos de ${this.selectedUser.name} actualizados`
-    });
-
-    this.visiblePermissionsDialog = false;
-    this.loadUsers();
-  }
+  this.usersService.http.put(
+    `${environment.apiUrl}/users/${this.selectedUser.id}/permissions`,
+    { permissions: this.selectedPermissions }
+  ).subscribe({
+    next: () => {
+      this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Permisos actualizados' });
+      this.visiblePermissionsDialog = false;
+      
+      // Recargar usuarios y actualizar selectedUser con datos frescos
+      this.usersService.getAll().subscribe({
+        next: (users) => {
+          this.users = users;
+          // Actualizar selectedUser con los permisos nuevos
+          const updated = users.find(u => u.id === this.selectedUser?.id);
+          if (updated) this.selectedUser = updated;
+        }
+      });
+    },
+    error: () => this.messageService.add({ 
+      severity: 'error', summary: 'Error', detail: 'No se pudieron guardar los permisos' 
+    })
+  });
+}
 
   togglePermission(permission: string) {
     const index = this.selectedPermissions.indexOf(permission);
@@ -176,8 +198,8 @@ export class PermissionsManagementComponent implements OnInit {
   }
 
   getPermissionCount(user: User): number {
-    return user.permissions.length;
-  }
+  return user.permissions?.length || 0;  // ← agrega el ?.
+}
 
   getActiveUserCount(): number {
     return this.users.filter(u => u.active).length;
