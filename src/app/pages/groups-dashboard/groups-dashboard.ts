@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { CardModule } from 'primeng/card';
@@ -16,8 +16,10 @@ import { UsersService } from '../../services/users.service';
 import { TagModule } from 'primeng/tag';
 
 @Component({
+  
   selector: 'app-group-dashboard',
   standalone: true,
+ // encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule, Sidebar, CardModule, TableModule,
     ButtonModule, DialogModule, FormsModule, DragDropModule, ToastModule, TagModule
@@ -37,14 +39,16 @@ export class GroupDashboard implements OnInit {
   modalIntegrante = false;
   modalTicket = false;
   nuevoIntegranteId = ''; // ← guardar el ID, no el nombre
+  tituloSubmitted = false;
 
-  nuevoTicket = {
-    title: '',
-    description: '',
-    status: 'abierto',
-    priority: 'media', // ← agregar
-    assigned_to: ''
-  };
+ nuevoTicket = {
+  title: '',
+  description: '',
+  status: '' as string,
+  priority: '' as string,
+  assigned_to: '' as any,
+  due_date: ''
+};
 
   filtroActivo = 'todos';
 
@@ -124,10 +128,14 @@ ngOnInit() {
   }
 
   abrirModalTicket() { this.modalTicket = true; }
-  cerrarModalTicket() { this.modalTicket = false; }
+  cerrarModalTicket() {
+  this.modalTicket = false;
+  this.tituloSubmitted = false; // también al cancelar
+}
 
   crearTicket() {
-    if (!this.nuevoTicket.title.trim()) return;
+    this.tituloSubmitted = true;
+  if (!this.nuevoTicket.title.trim()) return;
     const currentUser = this.usersSvc.currentUser();
     this.ticketsSvc.create({
       ...this.nuevoTicket,
@@ -136,12 +144,12 @@ ngOnInit() {
     }).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Creado', detail: 'Ticket creado' });
-        this.nuevoTicket = { title: '', description: '', status: 'abierto', priority: 'media', assigned_to: '' };
-        this.modalTicket = false;
+        this.nuevoTicket = { title: '', description: '', status: 'abierto', priority: 'media', assigned_to: '', due_date: '' };        this.modalTicket = false;
         this.cargarTickets();
       },
       error: () => this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo crear el ticket' })
     });
+    this.tituloSubmitted = false;
   }
 
   // ─── KANBAN — estados corregidos ──────────────────────────
@@ -207,4 +215,5 @@ ngOnInit() {
     default: return 'info';
   }
 }
+
 }

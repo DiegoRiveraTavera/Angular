@@ -24,3 +24,72 @@ html, body {
   flex: 1;
   padding: 2rem;
 }
+
+/* ── MODAL TICKET: todo en un solo bloque limpio ── */
+
+/* Border radius para TODOS los inputs del modal */
+.ticket-dialog input.p-inputtext,
+.ticket-dialog textarea,
+.ticket-dialog select.p-inputtext {
+  border-radius: 20px !important;
+  padding-left: 14px !important;
+  box-sizing: border-box !important;
+}
+
+/* Fix específico para el input de fecha */
+.ticket-dialog input[type="date"].p-inputtext {
+  padding-top: 0.45rem !important;
+  padding-bottom: 0.45rem !important;
+  line-height: normal !important;
+  height: auto !important;
+}
+
+/* Placeholder color */
+.ticket-dialog input::placeholder,
+.ticket-dialog textarea::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* Select en gris cuando está sin valor */
+.ticket-dialog select.p-inputtext {
+  color: #9ca3af;
+}
+
+/* Select en negro cuando tiene valor seleccionado */
+.ticket-dialog select.p-inputtext:has(option:checked:not([value=""])) {
+  color: #1f2937;
+}
+
+/* Opciones siempre en negro */
+.ticket-dialog select option {
+  color: #000;
+}
+
+/* Fix border-radius en input de título con validación de PrimeNG */
+.ticket-dialog input[pInputText],
+.ticket-dialog input[pinputtext],
+.ticket-dialog .p-inputtext {
+  border-radius: 20px !important;
+}
+
+/* Asegura que el estado ng-invalid no rompa el border-radius */
+.ticket-dialog input.ng-invalid.ng-dirty,
+.ticket-dialog input.ng-invalid.ng-touched {
+  border-radius: 20px !important;
+  border-color: var(--red-500) !important;
+}
+
+/* Texto más grande en título y descripción del modal */
+.ticket-dialog .ticket-field input.p-inputtext,
+.ticket-dialog .ticket-field textarea {
+  font-size: 1.05rem !important;
+}
+
+/* Font-size en título, incluyendo estados de validación */
+.ticket-dialog input.p-inputtext,
+.ticket-dialog input.p-inputtext.ng-invalid,
+.ticket-dialog input.p-inputtext.ng-dirty,
+.ticket-dialog input.p-inputtext.ng-touched {
+  font-size: 1.05rem !important;
+}

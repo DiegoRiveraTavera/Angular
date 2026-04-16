@@ -35,3 +35,65 @@
 .cdk-drag-placeholder{
   opacity:0.3;
 }
+
+.ticket-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.1rem;
+  padding: 0.7rem 1.75rem;
+}
+
+.ticket-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.75rem;
+  border-top: 1px solid var(--surface-200);
+  background: var(--surface-50);
+}
+
+.ticket-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ticket-field label {
+  font-size: 1.0rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-color-secondary);
+}
+
+.ticket-field .required {
+  color: var(--red-500);
+}
+
+.ticket-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Placeholder más grande y uniforme en todos los campos */
+
+/* Estilo glassmorphism aplicado también a select y date */
+
+/* Color del texto dentro de los selects */
+.ticket-field select option {
+  color: #000; /* opciones desplegadas en negro para legibilidad */
+}
+
+/* Border radius en inputs, textarea y selects del modal */
+
+/* Color grisáceo cuando el select muestra el placeholder */
+
+/* Las opciones reales en negro para legibilidad */
+
+.ticket-field input.p-inputtext::placeholder,
+.ticket-field textarea.p-inputtextarea::placeholder {
+  color: rgba(150, 150, 150, 0.8) !important;
+  opacity: 1 !important;
+  font-size: 0.9rem;
+}

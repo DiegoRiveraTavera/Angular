@@ -4,66 +4,78 @@
 <div class="content p-4">
 
   <!-- PERFIL -->
-  <div class="flex justify-content-center mb-5">
-    <p-card class="w-full sm:w-30rem shadow-4 border-round-xl">
+  <!-- PERFIL -->
+<div class="flex justify-content-center mb-5">
+  <p-card class="perfil-card w-full sm:w-30rem">
 
-      <ng-template pTemplate="header">
-        <div class="flex flex-column align-items-center p-4">
-          <i class="pi pi-user text-6xl mb-3"></i>
+    <ng-template pTemplate="header">
+      <div class="perfil-header">
+        <div class="perfil-avatar">
+          <i class="pi pi-user"></i>
+        </div>
+        <div>
           <h2 class="m-0">{{ usuario.name }}</h2>
           <small class="text-color-secondary">{{ usuario.email }}</small>
         </div>
-      </ng-template>
+      </div>
+    </ng-template>
 
-      <div class="p-fluid">
+    <div class="p-fluid">
 
-        <div class="field mb-3">
-          <label class="font-bold">Email</label>
-          <input *ngIf="editando" pInputText [(ngModel)]="usuario.email" />
-          <div *ngIf="!editando" class="p-2 border-round surface-100">{{ usuario.email }}</div>
+      <div class="perfil-field" *ngFor="let _ of [0]">
+
+        <div class="perfil-row">
+          <label class="perfil-label">Email</label>
+          <input *ngIf="editando" pInputText [(ngModel)]="usuario.email" class="perfil-input" />
+          <div *ngIf="!editando" class="perfil-value">{{ usuario.email }}</div>
         </div>
 
-        <div class="field mb-3">
-          <label class="font-bold">Calle</label>
-          <input *ngIf="editando" pInputText [(ngModel)]="usuario.calle" />
-          <div *ngIf="!editando" class="p-2 border-round surface-100">{{ usuario.calle || '—' }}</div>
+        <div class="perfil-divider"></div>
+
+        <div class="perfil-row">
+          <label class="perfil-label">Calle</label>
+          <input *ngIf="editando" pInputText [(ngModel)]="usuario.calle" class="perfil-input" />
+          <div *ngIf="!editando" class="perfil-value">{{ usuario.calle || '—' }}</div>
         </div>
 
-        <div class="field mb-3">
-          <label class="font-bold">Colonia</label>
-          <input *ngIf="editando" pInputText [(ngModel)]="usuario.colonia" />
-          <div *ngIf="!editando" class="p-2 border-round surface-100">{{ usuario.colonia || '—' }}</div>
+        <div class="perfil-row">
+          <label class="perfil-label">Colonia</label>
+          <input *ngIf="editando" pInputText [(ngModel)]="usuario.colonia" class="perfil-input" />
+          <div *ngIf="!editando" class="perfil-value">{{ usuario.colonia || '—' }}</div>
         </div>
 
-        <div class="field mb-3">
-          <label class="font-bold">No. Exterior</label>
-          <input *ngIf="editando" pInputText [(ngModel)]="usuario.no_exterior" />
-          <div *ngIf="!editando" class="p-2 border-round surface-100">{{ usuario.no_exterior || '—' }}</div>
+        <div class="perfil-row">
+          <label class="perfil-label">No. Exterior</label>
+          <input *ngIf="editando" pInputText [(ngModel)]="usuario.no_exterior" class="perfil-input" />
+          <div *ngIf="!editando" class="perfil-value">{{ usuario.no_exterior || '—' }}</div>
         </div>
 
-        <div class="field mb-3">
-          <label class="font-bold">Teléfono</label>
-          <input *ngIf="editando" pInputText [(ngModel)]="usuario.telefono" />
-          <div *ngIf="!editando" class="p-2 border-round surface-100">{{ usuario.telefono || '—' }}</div>
-        </div>
-
-        <div class="flex justify-content-end gap-2 mt-4">
-          <button pButton
-            [label]="editando ? 'Guardar' : 'Editar'"
-            icon="pi pi-pencil"
-            (click)="toggleEditar()">
-          </button>
-          <button *ngIf="editando" pButton
-            label="Cancelar"
-            icon="pi pi-times"
-            class="p-button-secondary"
-            (click)="editando = false">
-          </button>
+        <div class="perfil-row">
+          <label class="perfil-label">Teléfono</label>
+          <input *ngIf="editando" pInputText [(ngModel)]="usuario.telefono" class="perfil-input" />
+          <div *ngIf="!editando" class="perfil-value">{{ usuario.telefono || '—' }}</div>
         </div>
 
       </div>
-    </p-card>
-  </div>
+
+      <div class="perfil-actions">
+        <button *ngIf="editando" pButton
+          label="Cancelar"
+          icon="pi pi-times"
+          class="p-button-text p-button-secondary"
+          (click)="editando = false">
+        </button>
+        <button pButton
+          [label]="editando ? 'Guardar' : 'Editar'"
+          [icon]="editando ? 'pi pi-check' : 'pi pi-pencil'"
+          [class]="editando ? '' : 'p-button-outlined'"
+          (click)="toggleEditar()">
+        </button>
+      </div>
+
+    </div>
+  </p-card>
+</div>
 
   <!-- RESUMEN -->
   <h2 class="mb-3">Mis Tickets</h2>

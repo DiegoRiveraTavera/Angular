@@ -166,6 +166,8 @@
         <th pSortableColumn="priority">Prioridad <p-sortIcon field="priority"></p-sortIcon></th>
         <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
         <th pSortableColumn="created_at">Fecha <p-sortIcon field="created_at"></p-sortIcon></th>
+        <th pSortableColumn="due_date">Fecha límite <p-sortIcon field="due_date"></p-sortIcon></th>
+
       </tr>
     </ng-template>
 
@@ -178,6 +180,7 @@
         </td>
         <td>{{ ticket.status }}</td>
         <td>{{ ticket.created_at | date:'dd/MM/yyyy' }}</td>
+        <td>{{ ticket.due_date ? (ticket.due_date | date:'dd/MM/yyyy') : '—' }}</td>
       </tr>
     </ng-template>
 
@@ -193,51 +196,96 @@
 
 <!-- MODAL CREAR TICKET -->
 <p-dialog header="Crear Nuevo Ticket"
-  [(visible)]="modalTicket" [modal]="true" [style]="{width:'450px'}">
-  <div class="p-fluid">
+  [(visible)]="modalTicket" [modal]="true"
+  [style]="{width:'520px'}"
+  [contentStyle]="{'padding': '0'}"
+  styleClass="ticket-dialog">
 
-    <div class="field mb-3">
-      <label>Título *</label>
-      <input pInputText [(ngModel)]="nuevoTicket.title" placeholder="Título del ticket">
+  <div class="ticket-form">
+
+    <div class="ticket-form-body">
+
+      <div class="ticket-field">
+        <label>Título <span class="required">*</span></label>
+        <input pInputText 
+  [(ngModel)]="nuevoTicket.title"
+  name="title"
+  #tituloField="ngModel"
+  required
+  placeholder="Ej. Bug en el login, mejora de rendimiento..."
+  [class.ng-invalid]="tituloField.invalid && tituloSubmitted"
+  [class.ng-dirty]="tituloSubmitted" />
+
+<small *ngIf="tituloSubmitted && !nuevoTicket.title.trim()" 
+  style="color: var(--red-500); font-size: 0.8rem;">
+  El título es obligatorio
+</small>
+      </div>
+
+      <div class="ticket-field">
+        <label>Descripción</label>
+        <textarea pInputTextarea rows="3" class="w-full"
+          [(ngModel)]="nuevoTicket.description"
+          placeholder="Describe el problema o tarea con detalle...">
+        </textarea>
+      </div>
+
+      <div class="ticket-grid-2">
+        <div class="ticket-field">
+          <label>Estado</label>
+          <select [(ngModel)]="nuevoTicket.status" 
+        [ngModelOptions]="{standalone: true}" 
+        class="p-inputtext w-full">
+  <option value="" disabled>Selecciona estado...</option>
+  <option value="abierto">Abierto</option>
+  <option value="en_progreso">En progreso</option>
+  <option value="cerrado">Cerrado</option>
+  <option value="bloqueado">Bloqueado</option>
+</select>
+
+        </div>
+        <div class="ticket-field">
+          <label>Prioridad</label>
+          <select [(ngModel)]="nuevoTicket.priority"
+        [ngModelOptions]="{standalone: true}"
+        class="p-inputtext w-full">
+  <option value="" disabled>— Selecciona prioridad —</option>
+  <option value="baja">Baja</option>
+  <option value="media">Media</option>
+  <option value="alta">Alta</option>
+</select>
+        </div>
+      </div>
+
+      <div class="ticket-grid-2">
+        <div class="ticket-field">
+          <label>Asignar a</label>
+          <select [(ngModel)]="nuevoTicket.assigned_to"
+        [ngModelOptions]="{standalone: true}"
+        class="p-inputtext w-full">
+  <option value="" disabled>— Sin asignar —</option>
+  <option *ngFor="let u of integrantes" [value]="u.id">{{ u.name }}</option>
+</select>
+        </div>
+
+        <div class="ticket-field">
+          <label>Fecha límite</label>
+          <input type="date" class="p-inputtext w-full"
+            [(ngModel)]="nuevoTicket.due_date" />
+        </div>
+      </div>
+
     </div>
 
-    <div class="field mb-3">
-      <label>Descripción</label>
-      <textarea rows="3" class="p-inputtext w-full"
-        [(ngModel)]="nuevoTicket.description" placeholder="Descripción del ticket">
-      </textarea>
-    </div>
-
-    <div class="field mb-3">
-      <label>Estado</label>
-      <select [(ngModel)]="nuevoTicket.status" class="p-inputtext w-full">
-        <option value="abierto">Abierto</option>
-        <option value="en_progreso">En progreso</option>
-        <option value="cerrado">Cerrado</option>
-        <option value="bloqueado">Bloqueado</option>
-      </select>
-    </div>
-
-    <div class="field mb-3">
-      <label>Prioridad</label>
-      <select [(ngModel)]="nuevoTicket.priority" class="p-inputtext w-full">
-        <option value="baja">Baja</option>
-        <option value="media">Media</option>
-        <option value="alta">Alta</option>
-      </select>
-    </div>
-
-    <div class="field mb-3">
-      <label>Asignar a</label>
-      <select [(ngModel)]="nuevoTicket.assigned_to" class="p-inputtext w-full">
-        <option value="">-- Sin asignar --</option>
-        <option *ngFor="let u of integrantes" [value]="u.id">{{ u.name }}</option>
-      </select>
-    </div>
-
-    <div class="flex justify-content-end gap-2">
-      <button pButton label="Cancelar" class="p-button-secondary" (click)="cerrarModalTicket()"></button>
-      <button pButton label="Crear" class="p-button-success" (click)="crearTicket()"></button>
+    <div class="ticket-form-footer">
+      <button pButton label="Cancelar" icon="pi pi-times"
+        class="p-button-text p-button-secondary"
+        (click)="cerrarModalTicket()">
+      </button>
+      <button pButton label="Crear ticket" icon="pi pi-plus"
+        class="p-button-success"
+        (click)="crearTicket()">
+      </button>
     </div>
 
   </div>

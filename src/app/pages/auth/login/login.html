@@ -1,45 +1,28 @@
-<div class="flex align-items-center justify-content-center min-h-screen bg-gray-100">
-  
-  <p-card header="Iniciar Sesión" class="w-full md:w-30rem shadow-4 border-round-xl">
+<div class="night-bg">
+  <p-toast position="top-right"></p-toast>
+  <div class="glass-card">
+    <h2>Login</h2>
 
-    <p-toast></p-toast>
 
     <form class="p-fluid" (ngSubmit)="login()" #form="ngForm">
-
-      <div class="field mb-4">
-        <label for="email" class="font-semibold">Email</label>
-        <input 
-          pInputText 
-          id="email" 
-          [(ngModel)]="email" 
-          name="email"
-          class="w-full"
-        />
+      <div class="input-wrap">
+        <span class="input-icon pi pi-user"></span>
+        <input class="glass-input" pInputText id="email"
+          [(ngModel)]="email" name="email" placeholder="Email"/>
       </div>
 
-      <div class="field mb-4">
-        <label for="password" class="font-semibold">Password</label>
-        <p-password 
-          id="password" 
-          [(ngModel)]="password" 
-          name="password" 
-          [feedback]="false"
-          styleClass="w-full">
-        </p-password>
+      <div class="input-wrap">
+        <span class="input-icon pi pi-lock"></span>
+        <input class="glass-input" type="password" id="password"
+          [(ngModel)]="password" name="password" placeholder="Contraseña"/>
       </div>
 
-      <button pButton type="submit" label="Entrar" [loading]="loading" class="w-full mb-3"></button>
-
-      <button 
-        pButton 
-        type="button"
-        label="¿No tienes cuenta? Regístrate"
-        class="w-full p-button-text"
-        routerLink="/register">
+      <button class="btn-main" type="submit" [disabled]="loading">
+        {{ loading ? 'Entrando...' : 'Iniciar Sesión' }}
       </button>
-
+      <button class="btn-text" type="button" routerLink="/register">
+        ¿No tienes cuenta? <strong>Regístrate</strong>
+      </button>
     </form>
-
-  </p-card>
-
+  </div>
 </div>

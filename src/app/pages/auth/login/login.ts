@@ -14,6 +14,7 @@ import { PermissionsService } from '../../../services/permissions.service';
   selector: 'app-login',
   standalone: true,
   templateUrl: './login.html',
+  styleUrls: ['./login.css'], 
   imports: [FormsModule, ButtonModule, InputTextModule, PasswordModule, CardModule, ToastModule, RouterModule],
   providers: [MessageService]
 })

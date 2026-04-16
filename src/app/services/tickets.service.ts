@@ -15,6 +15,7 @@ export interface Ticket {
   created_by_name?: string;
   group_id: string;
   created_at: string;
+  due_date?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -40,9 +41,9 @@ export class TicketsService {
     return this.http.get<Ticket>(`${this.api}/${id}`);
   }
 
-  create(ticket: Partial<Ticket>): Observable<Ticket> {
-    return this.http.post<Ticket>(this.api, ticket);
-  }
+  create(ticket: Partial<Ticket>) {
+  return this.http.post<Ticket>(this.api, ticket);
+}
 
   update(id: string, ticket: Partial<Ticket>): Observable<Ticket> {
     return this.http.put<Ticket>(`${this.api}/${id}`, ticket);

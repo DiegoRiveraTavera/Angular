@@ -16,6 +16,7 @@ import { environment } from '../../../../app/enviroments/enviroment';
   selector: 'app-register',
   standalone: true,
   templateUrl: './register.html',
+  styleUrls: ['./register.css'],
   imports: [
     CommonModule, ReactiveFormsModule, RouterModule,
     ButtonModule, InputTextModule, PasswordModule,

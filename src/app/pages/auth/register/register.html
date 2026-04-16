@@ -1,12 +1,12 @@
-<div class="flex align-items-center justify-content-center min-h-screen surface-ground">
-  <p-toast></p-toast>
-  <p-card header="Registro" class="w-full sm:w-30rem shadow-4 border-round-xl">
+<div class="night-bg">
+  <p-toast position="top-right"></p-toast>
+  <div class="glass-card">
+    <h2>Registro</h2>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="p-fluid">
 
       <div class="field mb-3">
-        <label>Nombre completo</label>
-        <input pInputText formControlName="name" class="w-full"/>
+        <input pInputText formControlName="name" class="glass-input" placeholder="Nombre completo"/>
         <small class="p-error"
           *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
           El nombre es requerido.
@@ -14,8 +14,7 @@
       </div>
 
       <div class="field mb-3">
-        <label>Email</label>
-        <input pInputText formControlName="email" class="w-full"/>
+        <input pInputText formControlName="email" class="glass-input" placeholder="Correo electrónico"/>
         <small class="p-error"
           *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
           Ingresa un email válido.
@@ -23,23 +22,19 @@
       </div>
 
       <div class="field mb-3">
-        <label>Calle</label>
-        <input pInputText formControlName="calle" class="w-full"/>
+        <input pInputText formControlName="calle" class="glass-input" placeholder="Calle"/>
       </div>
 
       <div class="field mb-3">
-        <label>Colonia</label>
-        <input pInputText formControlName="colonia" class="w-full"/>
+        <input pInputText formControlName="colonia" class="glass-input" placeholder="Colonia"/>
       </div>
 
       <div class="field mb-3">
-        <label>No. Exterior</label>
-        <input pInputText formControlName="no_exterior" class="w-full"/>
+        <input pInputText formControlName="no_exterior" class="glass-input" placeholder="Número exterior"/>
       </div>
 
       <div class="field mb-3">
-        <label>Teléfono</label>
-        <input pInputText formControlName="telefono" class="w-full"/>
+        <input pInputText formControlName="telefono" class="glass-input" placeholder="Teléfono"/>
         <small class="p-error"
           *ngIf="registerForm.get('telefono')?.invalid && registerForm.get('telefono')?.touched">
           Debe contener exactamente 10 números.
@@ -47,20 +42,18 @@
       </div>
 
       <div class="field mb-3">
-        <label>Contraseña</label>
-        <p-password formControlName="password" [feedback]="false" [toggleMask]="true" class="w-full"/>
+        <p-password formControlName="password" [feedback]="false" [toggleMask]="true" placeholder="Contraseña"/>
         <small class="p-error"
           *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-          Mínimo 10 caracteres y debe contener #
+          <br>Mínimo 10 caracteres y debe contener #
         </small>
       </div>
 
       <div class="field mb-3">
-        <label>Confirmar contraseña</label>
-        <p-password formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" class="w-full"/>
+        <p-password formControlName="confirmPassword" [feedback]="false" [toggleMask]="true" placeholder="Confirmar contraseña"/>
         <small class="p-error"
           *ngIf="registerForm.errors?.['passwordsMismatch'] && registerForm.get('confirmPassword')?.touched">
-          Las contraseñas no coinciden.
+          <br>Las contraseñas no coinciden.
         </small>
       </div>
 
@@ -74,14 +67,14 @@
         </small>
       </div>
 
-      <button pButton label="Registrarse" type="submit"
-        class="w-full mb-3" [loading]="loading">
+      <button class="btn-main" type="submit" [disabled]="loading">
+        {{ loading ? 'Registrando...' : 'Registrarse' }}
       </button>
 
-      <button pButton label="¿Ya tienes cuenta? Inicia sesión"
-        type="button" class="w-full p-button-text" routerLink="/login">
+      <button class="btn-text" type="button" routerLink="/login">
+        ¿Ya tienes cuenta? <strong>Inicia sesión</strong>
       </button>
 
     </form>
-  </p-card>
+  </div>
 </div>
