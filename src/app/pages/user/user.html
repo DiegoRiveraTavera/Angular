@@ -4,7 +4,6 @@
 <div class="content p-4">
 
   <!-- PERFIL -->
-  <!-- PERFIL -->
 <div class="flex justify-content-center mb-5">
   <p-card class="perfil-card w-full sm:w-30rem">
 
@@ -112,26 +111,35 @@
     <p-table [value]="tickets" [paginator]="true" [rows]="10">
 
       <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="title">Título <p-sortIcon field="title"></p-sortIcon></th>
-          <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
-          <th pSortableColumn="priority">Prioridad <p-sortIcon field="priority"></p-sortIcon></th>
-          <th pSortableColumn="created_at">Fecha <p-sortIcon field="created_at"></p-sortIcon></th>
-        </tr>
-      </ng-template>
+  <tr>
+    <th pSortableColumn="title">Título <p-sortIcon field="title"></p-sortIcon></th>
+    <th pSortableColumn="status">Estado <p-sortIcon field="status"></p-sortIcon></th>
+    <th pSortableColumn="priority">Prioridad <p-sortIcon field="priority"></p-sortIcon></th>
+    <th pSortableColumn="created_at">Fecha <p-sortIcon field="created_at"></p-sortIcon></th>
+    <th pSortableColumn="due_date">Fecha límite <p-sortIcon field="due_date"></p-sortIcon></th>
+  </tr>
+</ng-template>
 
-      <ng-template pTemplate="body" let-ticket>
-        <tr>
-          <td>{{ ticket.title }}</td>
-          <td>
-            <p-tag [value]="ticket.status" [severity]="getStatusSeverity(ticket.status)"></p-tag>
-          </td>
-          <td>
-            <p-tag [value]="ticket.priority" [severity]="getPrioritySeverity(ticket.priority)"></p-tag>
-          </td>
-          <td>{{ ticket.created_at | date:'dd/MM/yyyy' }}</td>
-        </tr>
+<ng-template pTemplate="body" let-ticket>
+  <tr>
+    <td>{{ ticket.title }}</td>
+    <td>
+      <p-tag [value]="ticket.status" [severity]="getStatusSeverity(ticket.status)"></p-tag>
+    </td>
+    <td>
+      <p-tag [value]="ticket.priority" [severity]="getPrioritySeverity(ticket.priority)"></p-tag>
+    </td>
+    <td>{{ ticket.created_at | date:'dd/MM/yyyy' }}</td>
+    <td>
+      <span *ngIf="ticket.due_date; else sinFecha">
+        {{ ticket.due_date | date:'dd/MM/yyyy' }}
+      </span>
+      <ng-template #sinFecha>
+        <span class="text-color-secondary">—</span>
       </ng-template>
+    </td>
+  </tr>
+</ng-template>
 
       <ng-template pTemplate="emptymessage">
         <tr>
